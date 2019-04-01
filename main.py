@@ -8,6 +8,7 @@ import docker
 import psutil
 import logging
 import platform
+import argparse
 import subprocess
 
 g_pre_stats = {}
@@ -291,27 +292,25 @@ def sys_dynamic_info():
     }
 
 
-USAGE = '''
-Usage: %s <option>
+TYPES_MAP = {
+    'sysinfo': sys_static_info,
+    'sysload': sys_load,
+    'gpu': nvidia_smi_query_gpu,
+    'disk': disk_usage,
+    'containers': docker_stats2,
+}
 
-Option:
-    --static    Collect static info
-    --dynamic   Collect dynamic info
-'''
 
 if __name__ == '__main__':
-    if len(sys.argv) != 2:
-        print(USAGE % sys.argv[0], file=sys.stderr)
-        sys.exit(1)
+    parser = argparse.ArgumentParser(prog='sshx')
+    parser.add_argument('type', type=str, help='info type: %s' %
+                        ', '.join(TYPES_MAP.keys()))
+    args = parser.parse_args()
 
-    if sys.argv[1] == '--dynamic':
-        info = sys_dynamic_info()
-    elif sys.argv[1] == '--static':
-        info = sys_static_info()
+    if args.type not in TYPES_MAP:
+        parser.print_help()
     else:
-        print('Invalid option %s' % sys.argv[1])
-        sys.exit(1)
+        import json
 
-    import json
-
-    print(json.dumps(info, indent=4))
+        func = TYPES_MAP[args.type]
+        print(json.dumps(func(), indent=4))
