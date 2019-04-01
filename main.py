@@ -356,7 +356,7 @@ TYPES_MAP = {
 }
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(prog='sshx')
+    parser = argparse.ArgumentParser(prog=sys.argv[0])
     parser.add_argument('type', type=str, help='info type: %s' %
                         ', '.join(TYPES_MAP.keys()))
     args = parser.parse_args()
