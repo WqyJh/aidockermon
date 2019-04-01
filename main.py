@@ -112,7 +112,7 @@ def container_pids(container_name):
     if output is None:
         return []
 
-    return output.split()[1:-1]
+    return [int(x) for x in output.split()[1:-1]]
 
 
 def nvidia_smi_query_gpu():
@@ -135,12 +135,12 @@ def nvidia_smi_query_gpu():
     reader = csv.reader(io.StringIO(output), skipinitialspace=True)
 
     return [{
-            'gpu_perc': row[0],
-            'mem_perc': row[1],
-            'mem_used': row[2],
-            'mem_free': row[3],
-            'mem_tot': row[4],
-            'gpu_temperature': row[5],
+            'gpu_perc': float(row[0]),
+            'mem_perc': float(row[1]),
+            'mem_used': int(row[2]),
+            'mem_free': int(row[3]),
+            'mem_tot': int(row[4]),
+            'gpu_temperature': float(row[5]),
             } for row in reader]
 
 
@@ -160,10 +160,10 @@ def nvidia_smi_query_apps():
         return []
 
     def _convert_row(row):
-        pid = row[0]
-        mem_used = row[1]
+        pid = int(row[0])
+        mem_used = int(row[1])
 
-        p = psutil.Process(int(pid))
+        p = psutil.Process(pid)
         proc_name = ' '.join(p.cmdline())
         started_time = p.create_time()
         running_time = strfcreate(started_time)
@@ -201,14 +201,14 @@ def docker_stats():
 
         return {
             'name': row[0],
-            'cpu_perc': row[1],
-            'mem_perc': row[2],
-            'mem_used': mem_used,
-            'mem_limit': mem_limit,
-            'net_input': net_input,
-            'net_output': net_output,
-            'block_read': block_read,
-            'block_write': block_write,
+            'cpu_perc': float(row[1]),
+            'mem_perc': float(row[2]),
+            'mem_used': int(mem_used),
+            'mem_limit': int(mem_limit),
+            'net_input': int(net_input),
+            'net_output': int(net_output),
+            'block_read': int(block_read),
+            'block_write': int(block_write),
         }
 
     return [_convert_row(row) for row in reader]
@@ -247,14 +247,14 @@ def docker_stats2():
 
         return {
             'name': c.name,
-            'cpu_perc': cpu_perc,
+            'cpu_perc': float(cpu_perc),
             'mem_perc': float(mem_used) / float(mem_limit) * 100,
-            'mem_used': mem_used,
-            'mem_limit': mem_limit,
-            'net_input': net_input,
-            'net_output': net_output,
-            'block_read': blk_read,
-            'block_write': blk_write,
+            'mem_used': int(mem_used),
+            'mem_limit': int(mem_limit),
+            'net_input': int(net_input),
+            'net_output': int(net_output),
+            'block_read': int(blk_read),
+            'block_write': int(blk_write),
         }
 
     return [_convert_stats(c) for c in containers]
