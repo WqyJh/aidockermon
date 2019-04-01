@@ -16,12 +16,11 @@ def fastfail_call(args):
         # print('fastfail_call %s' % args)
         output = subprocess.check_output(args, timeout=10).decode()
     except subprocess.CalledProcessError as e:
-        print('Failed to call <%s>, return %d' % e.cmd, e.returncode)
-        print('Output:\n%s\nError:\n%s\n', e.stdout, e.stderr)
-        sys.exit(e.returncode)
+        print(e)
+        sys.exit(1)
     except FileNotFoundError as e:
-        print('<%s> not found', e.cmd)
-        sys.exit(e.returncode)
+        print(e)
+        sys.exit(1)
     return output
 
 
@@ -197,18 +196,18 @@ def sys_load():
 
 
 def sys_dynamic_info():
-    container_stats = docker_stats()
     apps = nvidia_smi_query_apps()
+    container_stats = docker_stats()
 
     for s in container_stats:
         s['pids'] = container_pids(s['name'])
         s['apps'] = []
-    
+
     for app in apps:
         for s in container_stats:
             if app['pid'] in s['pids']:
                 s['apps'].append(app)
-    
+
     for s in container_stats:
         del s['pids']
 
