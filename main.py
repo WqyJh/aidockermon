@@ -10,17 +10,18 @@ import logging
 import platform
 import subprocess
 
+g_pre_stats = {}
+
 
 def fastfail_call(args):
+    output = None
     try:
         # print('fastfail_call %s' % args)
         output = subprocess.check_output(args, timeout=10).decode()
     except subprocess.CalledProcessError as e:
         print(e)
-        sys.exit(1)
     except FileNotFoundError as e:
         print(e)
-        sys.exit(1)
     return output
 
 
@@ -53,6 +54,9 @@ def nvidia_info():
     import re
 
     output = fastfail_call(['nvidia-smi', '-q', '--display=COMPUTE'])
+    if output is None:
+        return {}
+
     driver_version = re.search(
         'Driver Version[\s\S]+?(\d+\.\d+)', output).group(1)
     cuda_version = re.search('CUDA Version[\s\S]+?(\d+\.\d+)', output).group(1)
@@ -80,7 +84,11 @@ def sys_static_info():
 
 
 def container_pids(container_name):
-    return fastfail_call(['docker', 'top', container_name, '-eo', 'pid']).split()[1:-1]
+    output = fastfail_call(['docker', 'top', container_name, '-eo', 'pid'])
+    if output is None:
+        return []
+
+    return output.split()[1:-1]
 
 
 def nvidia_smi_query_gpu():
@@ -97,12 +105,14 @@ def nvidia_smi_query_gpu():
                             '--query-gpu=utilization.gpu,utilization.memory,memory.used,memory.free,memory.total,temperature.gpu',
                             '--format=csv,noheader,nounits'
                             ])
-    reader = csv.reader(io.StringIO(output))
-    next(reader)  # Skip csv header
+    if output is None:
+        return []
+
+    reader = csv.reader(io.StringIO(output), skipinitialspace=True)
 
     return [{
-            'gpu_usage': row[0],
-            'mem_usage': row[1],
+            'gpu_perc': row[0],
+            'mem_perc': row[1],
             'mem_used': row[2],
             'mem_free': row[3],
             'mem_tot': row[4],
@@ -122,7 +132,10 @@ def nvidia_smi_query_apps():
                             '--query-compute-apps=pid,name,used_memory',
                             '--format=csv,noheader,nounits'
                             ])
-    reader = csv.reader(io.StringIO(output))
+    if output is None:
+        return []
+
+    reader = csv.reader(io.StringIO(output), skipinitialspace=True)
     return [{
             'pid': row[0],
             'proc_name': row[1],
@@ -142,25 +155,72 @@ def docker_stats():
                             '--format',
                             "{{.Name}},{{.CPUPerc}},{{.MemPerc}},{{.MemUsage}},{{.NetIO}},{{.BlockIO}},{{.PIDs}}"
                             ])
-    reader = csv.reader(io.StringIO(output))
+    reader = csv.reader(io.StringIO(output), skipinitialspace=True)
 
     def _convert_row(row):
         mem_used, _, mem_limit = row[3].split()
         net_input, _, net_output = row[4].split()
-        block_input, _, block_output = row[5].split()
+        block_read, _, block_write = row[5].split()
 
         return {
             'name': row[0],
             'cpu_perc': row[1],
+            'mem_perc': row[2],
             'mem_used': mem_used,
             'mem_limit': mem_limit,
             'net_input': net_input,
             'net_output': net_output,
-            'block_input': block_input,
-            'block_output': block_output,
+            'block_read': block_read,
+            'block_write': block_write,
         }
 
     return [_convert_row(row) for row in reader]
+
+
+def docker_stats2():
+    client = docker.from_env()
+    containers = client.containers.list()
+
+    def _convert_stats(c):
+        stats = c.stats(stream=False)
+        if c.name in g_pre_stats:
+            cpu_stats = stats['cpu_stats']
+            pre_cpu_stats = g_pre_stats[c.name]['cpu_stats']
+            cpu_perc = (cpu_stats['cpu_usage']['total_usage'] - pre_cpu_stats['cpu_usage']
+                        ['total_usage']) / (cpu_stats['system_cpu_usage'] - pre_cpu_stats['system_cpu_usage']) * 100.0
+        else:
+            cpu_perc = 0
+
+        mem_used = stats['memory_stats']['stats']['rss']
+        mem_limit = stats['memory_stats']['limit']
+
+        net_input, net_output = 0, 0
+        for _, v in stats['networks'].items():
+            net_input += v['rx_bytes']
+            net_output += v['tx_bytes']
+
+        blk_read, blk_write = 0, 0
+        for v in stats['blkio_stats']['io_service_bytes_recursive']:
+            if v['op'] == 'Read':
+                blk_read += v['value']
+            elif v['op'] == 'Write':
+                blk_write += v['value']
+
+        g_pre_stats[c.name] = stats
+
+        return {
+            'name': c.name,
+            'cpu_perc': cpu_perc,
+            'mem_perc': float(mem_used) / float(mem_limit) * 100,
+            'mem_used': mem_used,
+            'mem_limit': mem_limit,
+            'net_input': net_input,
+            'net_output': net_output,
+            'block_read': blk_read,
+            'block_write': blk_write,
+        }
+
+    return [_convert_stats(c) for c in containers]
 
 
 def disk_usage(mountpoints=['/', '/disk']):
@@ -172,14 +232,25 @@ def disk_usage(mountpoints=['/', '/disk']):
                 mount_device[m] = d.device
 
     def _disk_usage(m):
-        du = psutil.disk_usage(m)
-        return {
-            'disk': m,
-            'total': du.total,
-            'used': du.used,
-            'free': du.free,
-            'percent': du.percent,
-        }
+        try:
+            du = psutil.disk_usage(m)
+            return {
+                'disk': m,
+                'total': du.total,
+                'used': du.used,
+                'free': du.free,
+                'percent': du.percent,
+            }
+        except FileNotFoundError as e:
+            print(e)
+            return {
+                'disk': m,
+                'total': 0,
+                'used': 0,
+                'free': 0,
+                'percent': 0,
+            }
+
     return [_disk_usage(m) for m in mountpoints]
 
 
@@ -188,6 +259,7 @@ def sys_load():
 
     return {
         'cpu_perc': psutil.cpu_percent(),
+        'mem_perc': vm.percent,
         'mem_tot': vm.total,
         'mem_used': vm.used,
         'mem_free': vm.free,
@@ -197,7 +269,7 @@ def sys_load():
 
 def sys_dynamic_info():
     apps = nvidia_smi_query_apps()
-    container_stats = docker_stats()
+    container_stats = docker_stats2()
 
     for s in container_stats:
         s['pids'] = container_pids(s['name'])
