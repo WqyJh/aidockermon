@@ -11,7 +11,30 @@ import platform
 import argparse
 import subprocess
 
+from string import Template
+
+
 g_pre_stats = {}
+
+
+class DeltaTemplate(Template):
+    delimiter = '%'
+
+
+def strfdelta(tdelta, fmt='%D %H:%M:%S'):
+    d = {"D": tdelta.days}
+    d['H'], rem = divmod(tdelta.seconds, 3600)
+    d['M'], d['S'] = divmod(rem, 60)
+    t = DeltaTemplate(fmt)
+    return t.substitute(**d)
+
+
+def strfcreate(tcreate, fmt='%D %H:%M:%S'):
+    import datetime
+
+    now = datetime.datetime.now()
+    start = datetime.datetime.fromtimestamp(tcreate)
+    return strfdelta(now - start)
 
 
 def fastfail_call(args):
@@ -21,7 +44,7 @@ def fastfail_call(args):
         output = subprocess.check_output(args, timeout=10).decode()
     except subprocess.CalledProcessError as e:
         print(e)
-    except FileNotFoundError as e:
+    except OSError as e:
         print(e)
     return output
 
@@ -123,31 +146,44 @@ def nvidia_smi_query_gpu():
 
 def nvidia_smi_query_apps():
     '''
-    nvidia-smi --query-compute-apps=pid,name,used_memory --format=csv,noheader,nounits
-    15185, python3, 9089
+    nvidia-smi --query-compute-apps=pid,used_memory --format=csv,noheader,nounits
+    15185, 9089
 
-    nvidia-smi --query-compute-apps=pid,name,used_memory --format=csv,noheader
-    15185, python3, 9089 MiB
+    nvidia-smi --query-compute-apps=pid,used_memory --format=csv,noheader
+    15185, 9089 MiB
     '''
     output = fastfail_call(['nvidia-smi',
-                            '--query-compute-apps=pid,name,used_memory',
+                            '--query-compute-apps=pid,used_memory',
                             '--format=csv,noheader,nounits'
                             ])
     if output is None:
         return []
 
+    def _convert_row(row):
+        pid = row[0]
+        mem_used = row[1]
+
+        p = psutil.Process(int(pid))
+        proc_name = ' '.join(p.cmdline())
+        started_time = p.create_time()
+        running_time = strfcreate(started_time)
+
+        return {
+            'pid': pid,
+            'proc_name': proc_name,
+            'mem_used': mem_used,
+            'running_time': running_time,
+            'started_time': started_time,
+        }
+
     reader = csv.reader(io.StringIO(output), skipinitialspace=True)
-    return [{
-            'pid': row[0],
-            'proc_name': row[1],
-            'mem_used': row[2],
-            } for row in reader]
+    return [_convert_row(row) for row in reader]
 
 
 def docker_stats():
     '''
     docker stats --no-stream --format {{.Name}},{{.CPUPerc}},{{.MemPerc}},{{.MemUsage}},{{.NetIO}},{{.BlockIO}},{{.PIDs}}
-    DianAI,171.47%,5.43%,3.408GiB / 62.78GiB,62.5GB / 23.2GB,14.7GB / 3.82GB,109
+    DianAI,171.47%,5.43%,3.408GiB / 62.78GiB,62.5GB / 23.2GB,14.7GB / 3.82GB,/109
     MrHei2,0.00%,0.00%,716KiB / 62.78GiB,6.35GB / 164MB,20.3GB / 9.1GB,1
     '''
     output = fastfail_call(['docker',
@@ -242,7 +278,7 @@ def disk_usage(mountpoints=['/', '/disk']):
                 'free': du.free,
                 'percent': du.percent,
             }
-        except FileNotFoundError as e:
+        except OSError as e:
             print(e)
             return {
                 'disk': m,
@@ -266,6 +302,25 @@ def sys_load():
         'mem_free': vm.free,
         'mem_avail': vm.available,
     }
+
+
+def get_container_stats():
+    apps = nvidia_smi_query_apps()
+    container_stats = docker_stats2()
+
+    for s in container_stats:
+        s['pids'] = container_pids(s['name'])
+        s['apps'] = []
+
+    for app in apps:
+        for s in container_stats:
+            if app['pid'] in s['pids']:
+                s['apps'].append(app)
+
+    for s in container_stats:
+        del s['pids']
+
+    return container_stats
 
 
 def sys_dynamic_info():
@@ -297,9 +352,8 @@ TYPES_MAP = {
     'sysload': sys_load,
     'gpu': nvidia_smi_query_gpu,
     'disk': disk_usage,
-    'containers': docker_stats2,
+    'containers': get_container_stats,
 }
-
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(prog='sshx')
