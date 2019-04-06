@@ -15,6 +15,8 @@ import logging.config
 from string import Template
 from rfc5424logging import Rfc5424SysLogHandler
 
+from aidockermon import __version__
+
 
 DEBUG = True
 
@@ -432,11 +434,13 @@ TYPES_MAP = {
     'containers': get_container_stats,
 }
 
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser(prog=sys.argv[0])
+
+def _main(argv):
+    prog = os.path.basename(sys.argv[0])
+    parser = argparse.ArgumentParser(prog=prog)
     parser.add_argument('type', type=str, help='info type: %s' %
                         ', '.join(TYPES_MAP.keys()))
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
 
     if args.type not in TYPES_MAP:
         parser.print_help()
@@ -454,3 +458,11 @@ if __name__ == '__main__':
         # ${MESSAGE} = json data
         logger_monitor.info(json.dumps(data),
                             extra={'structured_data': {'meta': {'type': args.type}}})
+
+
+def main():
+    _main(sys.argv[1:])
+
+
+if __name__ == '__main__':
+    main()
