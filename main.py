@@ -10,8 +10,86 @@ import logging
 import platform
 import argparse
 import subprocess
+import logging.config
 
 from string import Template
+from rfc5424logging import Rfc5424SysLogHandler
+
+
+DEBUG = True
+
+
+class RequireDebugTrue(logging.Filter):
+    """
+    This is a filter which only accept records when DEBUG=True.
+    """
+
+    def filter(self, record):
+        return DEBUG
+
+
+LOGGING = {
+    'version': 1,
+    'level': logging.DEBUG,
+    'disable_existing_loggers': False,
+    'formatters': {
+        # 'verbose': {
+        #     'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+        # },
+        'simple': {
+            'format': '%(levelname)s %(message)s'
+        },
+        'monitor': {
+            'format': '%(message)s'
+        }
+    },
+    'filters': {
+        'require_debug_true': {
+            '()': RequireDebugTrue,
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple',
+            'filters': ['require_debug_true'],
+        },
+        'monitor': {
+            'level': 'INFO',
+            'class': 'rfc5424logging.handler.Rfc5424SysLogHandler',
+            # 'class': 'logging.handlers.SysLogHandler',
+
+            # Use unix domain socket for better performance. (For production purpose)
+            # 'address': '/var/log/aidockermon',
+
+            # Use ip & port to enable packet sniff. (For debug purpose)
+            'address': ('127.0.0.1', 1514),
+
+            # `enterprise_id` MUST be set if you want to send structured_data.
+            # Value of it would be ignored if you send data under
+            # the predefined key like `meta`, which is unimportant
+            # and could be any value in this case.
+            'enterprise_id': 1,
+        },
+    },
+    'loggers': {
+        'runtime': {
+            'handlers': ['console', ],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+        'monitor': {
+            'handlers': ['monitor', 'console'],
+            'level': 'INFO',
+            'propagate': False,
+        }
+    },
+}
+
+logging.config.dictConfig(LOGGING)
+logger_runtime = logging.getLogger('runtime')
+logger_monitor = logging.getLogger('monitor')
 
 
 g_pre_stats = {}
@@ -40,12 +118,11 @@ def strfcreate(tcreate, fmt='%D %H:%M:%S'):
 def fastfail_call(args):
     output = None
     try:
-        # print('fastfail_call %s' % args)
         output = subprocess.check_output(args, timeout=10).decode()
     except subprocess.CalledProcessError as e:
-        print(e)
+        logger_runtime.error(e)
     except OSError as e:
-        print(e)
+        logger_runtime.error(e)
     return output
 
 
@@ -279,7 +356,7 @@ def disk_usage(mountpoints=['/', '/disk']):
                 'percent': du.percent,
             }
         except OSError as e:
-            print(e)
+            logger_runtime.critical(e)
             return {
                 'disk': m,
                 'total': 0,
@@ -366,5 +443,14 @@ if __name__ == '__main__':
     else:
         import json
 
-        func = TYPES_MAP[args.type]
-        print(json.dumps(func(), indent=4))
+        data = TYPES_MAP[args.type]()
+
+        # ${MESSAGE} = type
+        # ${.SDATA.meta.*} = json data
+        # logger_monitor.info(args.type, extra={'structured_data': {'meta': data}})
+
+        # We prefer this one!
+        # ${.SDATA.meta.type} = type
+        # ${MESSAGE} = json data
+        logger_monitor.info(json.dumps(data),
+                            extra={'structured_data': {'meta': {'type': args.type}}})
