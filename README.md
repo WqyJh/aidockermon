@@ -156,13 +156,81 @@ $ python main.py containers
 ]
 ```
 
+## logging config
+
+```yaml
+debug: false
+log:
+  version: 1
+
+  # This is the default level, which could be ignored.
+  # CRITICAL = 50
+  # FATAL = CRITICAL
+  # ERROR = 40
+  # WARNING = 30
+  # WARN = WARNING
+  # INFO = 20
+  # DEBUG = 10
+  # NOTSET = 0
+  #level: 20
+  disable_existing_loggers: false
+  formatters:
+    simple:
+      format: '%(levelname)s %(message)s'
+    monitor:
+      format: '%(message)s'
+  filters:
+    require_debug_true:
+      (): 'aidockermon.handlers.RequireDebugTrue'
+  handlers:
+    console:
+      level: DEBUG
+      class: logging.StreamHandler
+      formatter: simple
+      filters: [require_debug_true]
+    monitor:
+      level: INFO
+      class: rfc5424logging.handler.Rfc5424SysLogHandler
+      address: [127.0.0.1, 1514]
+      enterprise_id: 1
+  loggers:
+    runtime:
+      handlers: [console]
+      level: DEBUG
+      propagate: false
+    monitor:
+      handlers: [monitor, console]
+      level: INFO
+      propagate: false
+
+```
+
+This is the default config, which should be located at `/etc/aidockermon/config.yml`.
+
+You can modify the `address` value to specify the logging target.
+- `address: [127.0.0.1, 1514]`: UDP to 127.0.0.1:1514
+- `address: /var/log/aidockermon`: unix domain datagram socket
+
+If you add an `socktype` argument, you can specify whether to use UDP or TCP as transport protocol.
+- `socktype: 1`: TCP
+- `socktype: 2`: UDP
+
+Enable TLS/SSL:
+```yaml
+tls_enable: true
+tls_verify: true
+tls_ca_bundle: /path/to/ca-bundle.pem
+```
+
+Set `debug` as `true`, you can see message output in the console.
+
 ## syslog-ng
 
 Using syslog-ng to collect logs and send them to elasticsearch 
 for future use such as visualization with kibana.
 
 ```bash
-cp syslog-ng/aidockermon.conf /etc/syslog-ng/conf.d
+cp etc/syslog-ng/aidockermon.conf /etc/syslog-ng/conf.d
 sudo systemctl restart syslog-ng
 ```
 
@@ -195,3 +263,4 @@ log {
 	destination (d_elastic);
 };
 ```
+Modify it to specify the elasticsearch server and the log source's port and protocol.
