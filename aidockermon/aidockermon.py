@@ -19,7 +19,6 @@ from rfc5424logging import Rfc5424SysLogHandler
 from aidockermon import __version__
 
 
-
 logging.config.dictConfig(settings.LOGGING)
 logger_runtime = logging.getLogger('runtime')
 logger_monitor = logging.getLogger('monitor')
@@ -381,6 +380,9 @@ def _main(argv):
     parser = argparse.ArgumentParser(prog=prog)
     parser.add_argument('type', type=str, help='info type: %s' %
                         ', '.join(TYPES_MAP.keys()))
+    parser.add_argument('-v', '--version', action='version',
+                        version='%(prog)s-' + __version__)
+
     args = parser.parse_args(argv)
 
     if args.type not in TYPES_MAP:
