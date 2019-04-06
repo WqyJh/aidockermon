@@ -155,3 +155,13 @@ $ python main.py containers
     }
 ]
 ```
+
+## syslog-ng
+
+Using syslog-ng to collect logs and send them to elasticsearch 
+for future use such as visualization with kibana.
+
+```bash
+cp syslog-ng/aidockermon.conf /etc/syslog-ng/conf.d
+sudo systemctl restart syslog-ng
+```
