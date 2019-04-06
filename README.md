@@ -165,3 +165,33 @@ for future use such as visualization with kibana.
 cp syslog-ng/aidockermon.conf /etc/syslog-ng/conf.d
 sudo systemctl restart syslog-ng
 ```
+
+Sample config:
+
+```bash
+@version: 3.20
+
+destination d_elastic {
+	elasticsearch2(
+		index("syslog-ng")
+		type("${.SDATA.meta.type}")
+		flush-limit("0")
+		cluster("es-syslog-ng")
+		cluster-url("http://localhost:9200")
+		client-mode("http")
+		client-lib-dir(/usr/share/elasticsearch/lib)
+		template("${MESSAGE}\n")
+	);
+};
+
+source s_python {
+  #unix-dgram("/var/log/aidockermon");
+	syslog(ip(127.0.0.1) port(1514) transport("udp") flags(no-parse));
+};
+
+log {
+	source (s_python);
+  parser { syslog-parser(flags(syslog-protocol)); };
+	destination (d_elastic);
+};
+```
