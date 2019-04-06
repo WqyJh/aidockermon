@@ -382,7 +382,8 @@ def _main(argv):
                         ', '.join(TYPES_MAP.keys()))
     parser.add_argument('-v', '--version', action='version',
                         version='%(prog)s-' + __version__)
-    parser.add_argument('-l', '--stdout', action='store_true', default=False)
+    parser.add_argument('-l', '--stdout', action='store_true', default=False,
+                        help="Print pretty json to console instead of send a log")
 
     args = parser.parse_args(argv)
 

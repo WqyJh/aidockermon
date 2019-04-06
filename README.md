@@ -28,13 +28,15 @@ python setup.py install
 ## Usage
 
 ```bash
-usage: main.py [-h] type
+usage: aidockermon [-h] [-v] [-l] type
 
 positional arguments:
-  type        info type: sysinfo, sysload, gpu, disk, containers
+  type           info type: sysinfo, sysload, gpu, disk, containers
 
 optional arguments:
-  -h, --help  show this help message and exit
+  -h, --help     show this help message and exit
+  -v, --version  show program's version number and exit
+  -l, --stdout   Print pretty json to console instead of send a log
 ```
 
 **For example:**
