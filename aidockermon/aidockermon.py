@@ -13,83 +13,14 @@ import subprocess
 import logging.config
 
 from string import Template
+from aidockermon import settings
 from rfc5424logging import Rfc5424SysLogHandler
 
 from aidockermon import __version__
 
 
-DEBUG = True
 
-
-class RequireDebugTrue(logging.Filter):
-    """
-    This is a filter which only accept records when DEBUG=True.
-    """
-
-    def filter(self, record):
-        return DEBUG
-
-
-LOGGING = {
-    'version': 1,
-    'level': logging.DEBUG,
-    'disable_existing_loggers': False,
-    'formatters': {
-        # 'verbose': {
-        #     'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
-        # },
-        'simple': {
-            'format': '%(levelname)s %(message)s'
-        },
-        'monitor': {
-            'format': '%(message)s'
-        }
-    },
-    'filters': {
-        'require_debug_true': {
-            '()': RequireDebugTrue,
-        },
-    },
-    'handlers': {
-        'console': {
-            'level': 'DEBUG',
-            'class': 'logging.StreamHandler',
-            'formatter': 'simple',
-            'filters': ['require_debug_true'],
-        },
-        'monitor': {
-            'level': 'INFO',
-            'class': 'rfc5424logging.handler.Rfc5424SysLogHandler',
-            # 'class': 'logging.handlers.SysLogHandler',
-
-            # Use unix domain socket for better performance. (For production purpose)
-            # 'address': '/var/log/aidockermon',
-
-            # Use ip & port to enable packet sniff. (For debug purpose)
-            'address': ('127.0.0.1', 1514),
-
-            # `enterprise_id` MUST be set if you want to send structured_data.
-            # Value of it would be ignored if you send data under
-            # the predefined key like `meta`, which is unimportant
-            # and could be any value in this case.
-            'enterprise_id': 1,
-        },
-    },
-    'loggers': {
-        'runtime': {
-            'handlers': ['console', ],
-            'level': 'DEBUG',
-            'propagate': False,
-        },
-        'monitor': {
-            'handlers': ['monitor', 'console'],
-            'level': 'INFO',
-            'propagate': False,
-        }
-    },
-}
-
-logging.config.dictConfig(LOGGING)
+logging.config.dictConfig(settings.LOGGING)
 logger_runtime = logging.getLogger('runtime')
 logger_monitor = logging.getLogger('monitor')
 

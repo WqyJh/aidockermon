@@ -1,3 +1,3 @@
 __version__ = '0.1.0'
 
-__all__ = ['aidockermon']
+__all__ = ['aidockermon', 'handlers']
