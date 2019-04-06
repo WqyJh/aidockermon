@@ -194,7 +194,7 @@ def container_pids(container_name):
     return [int(x) for x in output.split()[1:-1]]
 
 
-def nvidia_smi_query_gpu():
+def _nvidia_smi_query_gpu():
     '''
     nvidia-smi --query-gpu=utilization.gpu,utilization.memory,memory.used,memory.free,memory.total,temperature.gpu --format=csv,noheader,nounits
     0, 0, 0, 11178, 11178, 45
@@ -221,6 +221,12 @@ def nvidia_smi_query_gpu():
             'mem_tot': int(row[4]),
             'gpu_temperature': float(row[5]),
             } for row in reader]
+
+
+def nvidia_smi_query_gpu():
+    return {
+        'gpus': _nvidia_smi_query_gpu(),
+    }
 
 
 def nvidia_smi_query_apps():
@@ -367,7 +373,9 @@ def disk_usage(mountpoints=['/', '/disk']):
                 'percent': 0,
             }
 
-    return [_disk_usage(m) for m in mountpoints]
+    return {
+        'disks': [_disk_usage(m) for m in mountpoints],
+    }
 
 
 def sys_load():
@@ -399,7 +407,9 @@ def get_container_stats():
     for s in container_stats:
         del s['pids']
 
-    return container_stats
+    return {
+        'containers': container_stats,
+    }
 
 
 def sys_dynamic_info():
