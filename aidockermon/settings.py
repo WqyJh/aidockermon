@@ -1,10 +1,12 @@
+import io
+import yaml
 import logging
 
 DEBUG = False
 
 LOGGING = {
     'version': 1,
-    'level': logging.DEBUG,
+    'level': logging.INFO,
     'disable_existing_loggers': False,
     'formatters': {
         # 'verbose': {
@@ -35,10 +37,10 @@ LOGGING = {
             # 'class': 'logging.handlers.SysLogHandler',
 
             # Use unix domain socket for better performance. (For production purpose)
-            # 'address': '/var/log/aidockermon',
+            'address': '/var/log/aidockermon',
 
             # Use ip & port to enable packet sniff. (For debug purpose)
-            'address': ('127.0.0.1', 1514),
+            # 'address': ('127.0.0.1', 1514),
 
             # `enterprise_id` MUST be set if you want to send structured_data.
             # Value of it would be ignored if you send data under
@@ -60,3 +62,38 @@ LOGGING = {
         }
     },
 }
+
+CFG_FILE = '/etc/aidockermon/config.yml'
+
+
+def load_yaml_compat(f):
+    conf = yaml.load(f, Loader=yaml.SafeLoader)
+
+    def _compat_log(log_conf):
+        '''
+        Because the Rfc5424SysLogHandler support tuple instead of
+        list as it's address argument, we have to convert the
+        address to tuple.
+        '''
+        if 'handlers' in log_conf:
+            for k, v in log_conf['handlers'].items():
+                if 'address' in v and isinstance(v['address'], list):
+                    v['address'] = tuple(v['address'])
+
+    if conf and 'log' in conf:
+        _compat_log(conf['log'])
+
+    return conf
+
+
+try:
+    with io.open(CFG_FILE, 'r') as f:
+        conf = load_yaml_compat(f)
+
+        if conf:
+            DEBUG = conf.get('debug', False)
+            LOGGING = conf.get('log', LOGGING)
+except OSError as e:
+    # print('Failed to parse config file: %s, use default config' % CFG_FILE)
+    # Be quiet about it. No config file is a common scene.
+    pass

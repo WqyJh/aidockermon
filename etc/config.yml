@@ -1,0 +1,43 @@
+debug: false
+log:
+  version: 1
+
+  # This is the default level, which could be ignored.
+  # CRITICAL = 50
+  # FATAL = CRITICAL
+  # ERROR = 40
+  # WARNING = 30
+  # WARN = WARNING
+  # INFO = 20
+  # DEBUG = 10
+  # NOTSET = 0
+  #level: 20
+  disable_existing_loggers: false
+  formatters:
+    simple:
+      format: '%(levelname)s %(message)s'
+    monitor:
+      format: '%(message)s'
+  filters:
+    require_debug_true:
+      (): 'aidockermon.handlers.RequireDebugTrue'
+  handlers:
+    console:
+      level: DEBUG
+      class: logging.StreamHandler
+      formatter: simple
+      filters: [require_debug_true]
+    monitor:
+      level: INFO
+      class: rfc5424logging.handler.Rfc5424SysLogHandler
+      address: [127.0.0.1, 1514]
+      enterprise_id: 1
+  loggers:
+    runtime:
+      handlers: [console]
+      level: DEBUG
+      propagate: false
+    monitor:
+      handlers: [monitor, console]
+      level: INFO
+      propagate: false
