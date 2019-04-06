@@ -382,6 +382,7 @@ def _main(argv):
                         ', '.join(TYPES_MAP.keys()))
     parser.add_argument('-v', '--version', action='version',
                         version='%(prog)s-' + __version__)
+    parser.add_argument('-l', '--stdout', action='store_true', default=False)
 
     args = parser.parse_args(argv)
 
@@ -391,6 +392,10 @@ def _main(argv):
         import json
 
         data = TYPES_MAP[args.type]()
+
+        if args.stdout:
+            print(json.dumps(data, indent=4))
+            return
 
         # ${MESSAGE} = type
         # ${.SDATA.meta.*} = json data
