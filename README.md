@@ -122,22 +122,20 @@ Show disk usage
 ```bash
 $ aidockermon query -l disk
 {
-    "disks": [
-        {
-            "disk": "/",
-            "used": 57594474496,
-            "percent": 24.1,
-            "free": 181305548800,
-            "total": 251709792256
-        },
-        {
-            "disk": "/disk",
-            "used": 978046386176,
-            "percent": 52.3,
-            "free": 890791309312,
-            "total": 1968874311680
-        }
-    ]
+    "disk0": {
+        "disk": "/",
+        "total": 454574346240,
+        "used": 91970076672,
+        "free": 339441819648,
+        "percent": 21.3
+    },
+    "disk1": {
+        "disk": "/disk",
+        "total": 0,
+        "used": 0,
+        "free": 0,
+        "percent": 0
+    }
 }
 ```
 

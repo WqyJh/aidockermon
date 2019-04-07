@@ -300,7 +300,7 @@ def disk_usage(mountpoints=['/', '/disk']):
             }
 
     return {
-        'disks': [_disk_usage(m) for m in mountpoints],
+        'disk%d' % i: _disk_usage(m) for i, m in enumerate(mountpoints)
     }
 
 

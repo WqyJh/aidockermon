@@ -109,7 +109,32 @@ ES_MAPPINGS = {
     },
     "disk": {
         "properties": {
-            "disks": {
+            "disk0": {
+                "properties": {
+                    "disk": {
+                        "type": "text",
+                        "fields": {
+                                "keyword": {
+                                    "type": "keyword",
+                                    "ignore_above": 256
+                                }
+                        }
+                    },
+                    "free": {
+                        "type": "long"
+                    },
+                    "percent": {
+                        "type": "float"
+                    },
+                    "total": {
+                        "type": "long"
+                    },
+                    "used": {
+                        "type": "long"
+                    }
+                }
+            },
+            "disk1": {
                 "properties": {
                     "disk": {
                         "type": "text",
