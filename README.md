@@ -47,7 +47,7 @@ Show sysinfo
 $ aidockermon -l sysinfo
 {
     "gpu": {
-        "gpu_num": "2",
+        "gpu_num": 2,
         "driver_version": "410.104",
         "cuda_version": "10.0"
     },

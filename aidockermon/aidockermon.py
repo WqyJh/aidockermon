@@ -93,7 +93,7 @@ def nvidia_info():
     driver_version = re.search(
         'Driver Version[\s\S]+?(\d+\.\d+)', output).group(1)
     cuda_version = re.search('CUDA Version[\s\S]+?(\d+\.\d+)', output).group(1)
-    gpu_num = re.search('Attached GPUs[\s\S]+?(\d+)', output).group(1)
+    gpu_num = int(re.search('Attached GPUs[\s\S]+?(\d+)', output).group(1))
     return {
         'driver_version': driver_version,
         'cuda_version': cuda_version,
