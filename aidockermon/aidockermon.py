@@ -13,6 +13,7 @@ import subprocess
 import logging.config
 
 from string import Template
+from aidockermon import utils
 from aidockermon import settings
 from rfc5424logging import Rfc5424SysLogHandler
 
@@ -378,35 +379,75 @@ TYPES_MAP = {
 def _main(argv):
     prog = os.path.basename(sys.argv[0])
     parser = argparse.ArgumentParser(prog=prog)
-    parser.add_argument('type', type=str, help='info type: %s' %
-                        ', '.join(TYPES_MAP.keys()))
     parser.add_argument('-v', '--version', action='version',
                         version='%(prog)s-' + __version__)
-    parser.add_argument('-l', '--stdout', action='store_true', default=False,
-                        help="Print pretty json to console instead of send a log")
+    subparsers = parser.add_subparsers(title='command', dest='command')
+
+    parser_query = subparsers.add_parser(
+        'query', help='Query system info, log them via syslog protocol')
+    parser_query.add_argument('type', type=str, help='info type: %s' %
+                              ', '.join(TYPES_MAP.keys()))
+    parser_query.add_argument('-l', '--stdout', action='store_true', default=False,
+                              help="Print pretty json to console instead of send a log")
+
+    parser_ces = subparsers.add_parser(
+        'create-esindex', help='Create elasticsearch index')
+    parser_ces.add_argument('index', type=str, help='index name', nargs='?')
+    parser_ces.add_argument('-l', '--esurl', help='Specify the elasticsearch url',
+                            default=utils.ES_URL)
+    parser_ces.add_argument(
+        '-a', '--all', action='store_true', help='Create all')
+
+    parser_des = subparsers.add_parser(
+        'delete-esindex', help='Delete elasticsearch index')
+    parser_des.add_argument('index', type=str, help='index name', nargs='?')
+    parser_des.add_argument('-l', '--esurl', help='Specify the elasticsearch url',
+                            default=utils.ES_URL)
+    parser_des.add_argument(
+        '-a', '--all', action='store_true', help='Create all')
 
     args = parser.parse_args(argv)
 
-    if args.type not in TYPES_MAP:
+    if not args.command:
         parser.print_help()
-    else:
-        import json
+    elif args.command == 'query':
+        if args.type not in TYPES_MAP:
+            parser_query.print_help()
+        else:
+            import json
 
-        data = TYPES_MAP[args.type]()
+            data = TYPES_MAP[args.type]()
 
-        if args.stdout:
-            print(json.dumps(data, indent=4))
-            return
+            if args.stdout:
+                print(json.dumps(data, indent=4))
+                return
 
-        # ${MESSAGE} = type
-        # ${.SDATA.meta.*} = json data
-        # logger_monitor.info(args.type, extra={'structured_data': {'meta': data}})
+            # ${MESSAGE} = type
+            # ${.SDATA.meta.*} = json data
+            # logger_monitor.info(args.type, extra={'structured_data': {'meta': data}})
 
-        # We prefer this one!
-        # ${.SDATA.meta.type} = type
-        # ${MESSAGE} = json data
-        logger_monitor.info(json.dumps(data),
-                            extra={'structured_data': {'meta': {'type': args.type}}})
+            # We prefer this one!
+            # ${.SDATA.meta.type} = type
+            # ${MESSAGE} = json data
+            logger_monitor.info(json.dumps(data),
+                                extra={'structured_data': {'meta': {'type': args.type}}})
+    elif args.command == 'create-esindex':
+        if args.all:
+            utils.create_es_indicies(es_url=args.esurl)
+        else:
+            if args.index is None:
+                parser_ces.print_help()
+                return
+
+            utils.create_es_index(args.index, es_url=args.esurl)
+    elif args.command == 'delete-esindex':
+        if args.all:
+            utils.delete_es_indicies(es_url=args.esurl)
+        else:
+            if args.index is None:
+                parser_des.print_help()
+                return
+            utils.delete_es_index(args.index, es_url=args.esurl)
 
 
 def main():
