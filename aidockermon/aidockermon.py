@@ -243,9 +243,10 @@ def docker_stats2():
         mem_limit = stats['memory_stats']['limit']
 
         net_input, net_output = 0, 0
-        for _, v in stats['networks'].items():
-            net_input += v['rx_bytes']
-            net_output += v['tx_bytes']
+        if 'networks' in stats:
+            for _, v in stats['networks'].items():
+                net_input += v['rx_bytes']
+                net_output += v['tx_bytes']
 
         blk_read, blk_write = 0, 0
         for v in stats['blkio_stats']['io_service_bytes_recursive']:
@@ -268,7 +269,9 @@ def docker_stats2():
             'block_write': int(blk_write),
         }
 
-    return [_convert_stats(c) for c in containers]
+    return {
+        c.name: _convert_stats(c) for c in containers
+    }
 
 
 def disk_usage(mountpoints=['/', '/disk']):
@@ -321,21 +324,19 @@ def get_container_stats():
     apps = nvidia_smi_query_apps()
     container_stats = docker_stats2()
 
-    for s in container_stats:
-        s['pids'] = container_pids(s['name'])
-        s['apps'] = []
+    for v in container_stats.values():
+        v['pids'] = container_pids(v['name'])
+        v['apps'] = []
 
     for app in apps:
-        for s in container_stats:
-            if app['pid'] in s['pids']:
-                s['apps'].append(app)
+        for v in container_stats.values():
+            if app['pid'] in v['pids']:
+                v['apps'].append(app)
 
-    for s in container_stats:
-        del s['pids']
+    for v in container_stats.values():
+        del v['pids']
 
-    return {
-        'containers': container_stats,
-    }
+    return container_stats
 
 
 def sys_dynamic_info():

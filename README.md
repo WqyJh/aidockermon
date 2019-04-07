@@ -144,29 +144,28 @@ Show containers' load
 ```bash
 $ aidockermon query -l containers
 {
-    "containers": [
-        {
-            "name": "DianAI",
-            "net_input": 84317943005,
-            "net_output": 21176290682,
-            "block_write": 89450307584,
-            "block_read": 16414523392,
-            "mem_limit": 67405533184,
-            "cpu_perc": 0.0,
-            "apps": [
-                {
-                    "running_time": "1 12:24:37",
-                    "pid": 4692,
-                    "proc_name": "python3 test_run.py",
-                    "started_time": 1554431776.79,
-                    "mem_used": 9159
-                }
-            ],
-            "mem_perc": 11.067838593658443,
-            "mem_used": 7460335616
-        }
-    ]
+    "DianAI": {
+        "block_read": 16460615680,
+        "cpu_perc": 0.0,
+        "mem_used": 7753641984,
+        "name": "DianAI",
+        "net_output": 22103065064,
+        "apps": [
+            {
+                "mem_used": 9159,
+                "started_time": 1554431776.79,
+                "proc_name": "python3 test_run.py",
+                "pid": 4692,
+                "running_time": "2 11:49:50"
+            }
+        ],
+        "mem_limit": 67405533184,
+        "mem_perc": 11.502975524033799,
+        "block_write": 89476292608,
+        "net_input": 115580793778
+    }
 }
+
 ```
 
 ## Config
