@@ -173,8 +173,9 @@ $ aidockermon query -l containers
 }
 ```
 
-## logging config
+## Config
 
+### logging
 ```yaml
 debug: false
 log:
@@ -241,7 +242,14 @@ tls_ca_bundle: /path/to/ca-bundle.pem
 
 Set `debug` as `true`, you can see message output in the console.
 
-## syslog-ng
+### Cronjob
+
+```bash
+sudo cp etc/cron.d/aidockermon /etc/cron.d
+sudo systemctl restart cron
+```
+
+### syslog-ng
 
 Using syslog-ng to collect logs and send them to elasticsearch 
 for future use such as visualization with kibana.

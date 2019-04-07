@@ -1,0 +1,14 @@
+# Query sysload every 5s
+* * * * * wqy /home/linux/venv/aidockermon/bin/aidockermon query sysload -r 12/5
+
+# Query gpu every 5s
+* * * * * wqy /home/linux/venv/aidockermon/bin/aidockermon query gpu -r 12/5
+
+# Query disk every 1min
+* * * * * wqy /home/linux/venv/aidockermon/bin/aidockermon query disk -r 12/5
+
+# Query containers every 1min
+* * * * * wqy /home/linux/venv/aidockermon/bin/aidockermon query containers
+
+# Query sysinfo every 1day
+8 8 * * * wqy /home/linux/venv/aidockermon/bin/aidockermon query sysinfo -r 12/5
