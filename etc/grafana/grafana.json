@@ -1,0 +1,305 @@
+{
+    "annotations": {
+      "list": [
+        {
+          "builtIn": 1,
+          "datasource": "-- Grafana --",
+          "enable": true,
+          "hide": true,
+          "iconColor": "rgba(0, 211, 255, 1)",
+          "name": "Annotations & Alerts",
+          "type": "dashboard"
+        }
+      ]
+    },
+    "editable": true,
+    "gnetId": null,
+    "graphTooltip": 0,
+    "id": 2,
+    "links": [],
+    "panels": [
+      {
+        "aliasColors": {},
+        "bars": false,
+        "dashLength": 10,
+        "dashes": false,
+        "description": "",
+        "fill": 1,
+        "gridPos": {
+          "h": 9,
+          "w": 12,
+          "x": 0,
+          "y": 0
+        },
+        "id": 2,
+        "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "rightSide": false,
+          "show": true,
+          "total": false,
+          "values": false
+        },
+        "lines": true,
+        "linewidth": 1,
+        "links": [],
+        "nullPointMode": "null",
+        "percentage": false,
+        "pointradius": 2,
+        "points": false,
+        "renderer": "flot",
+        "seriesOverrides": [
+          {
+            "alias": "mem_avail",
+            "yaxis": 2
+          },
+          {
+            "alias": "mem_free",
+            "yaxis": 2
+          },
+          {
+            "alias": "mem_used",
+            "yaxis": 2
+          }
+        ],
+        "spaceLength": 10,
+        "stack": false,
+        "steppedLine": false,
+        "targets": [
+          {
+            "alias": "cpu_perc",
+            "bucketAggs": [
+              {
+                "field": "timestamp",
+                "id": "2",
+                "settings": {
+                  "interval": "10s",
+                  "min_doc_count": 0,
+                  "trimEdges": 0
+                },
+                "type": "date_histogram"
+              }
+            ],
+            "metrics": [
+              {
+                "field": "cpu_perc",
+                "id": "1",
+                "meta": {},
+                "settings": {},
+                "type": "avg"
+              }
+            ],
+            "query": "_type:sysload",
+            "refId": "A",
+            "timeField": "timestamp"
+          },
+          {
+            "alias": "mem_perc",
+            "bucketAggs": [
+              {
+                "field": "timestamp",
+                "id": "2",
+                "settings": {
+                  "interval": "10s",
+                  "min_doc_count": 0,
+                  "trimEdges": 0
+                },
+                "type": "date_histogram"
+              }
+            ],
+            "metrics": [
+              {
+                "field": "mem_perc",
+                "id": "1",
+                "meta": {},
+                "settings": {},
+                "type": "avg"
+              }
+            ],
+            "query": "_type:sysload",
+            "refId": "B",
+            "timeField": "timestamp"
+          },
+          {
+            "alias": "mem_avail",
+            "bucketAggs": [
+              {
+                "field": "timestamp",
+                "id": "2",
+                "settings": {
+                  "interval": "10s",
+                  "min_doc_count": 0,
+                  "trimEdges": 0
+                },
+                "type": "date_histogram"
+              }
+            ],
+            "metrics": [
+              {
+                "field": "mem_avail",
+                "id": "1",
+                "inlineScript": "_value / 1024 /1024",
+                "meta": {},
+                "settings": {
+                  "script": {
+                    "inline": "_value / 1024 /1024"
+                  }
+                },
+                "type": "avg"
+              }
+            ],
+            "query": "_type:sysload",
+            "refId": "C",
+            "timeField": "timestamp"
+          },
+          {
+            "alias": "mem_free",
+            "bucketAggs": [
+              {
+                "field": "timestamp",
+                "id": "2",
+                "settings": {
+                  "interval": "10s",
+                  "min_doc_count": 0,
+                  "trimEdges": 0
+                },
+                "type": "date_histogram"
+              }
+            ],
+            "metrics": [
+              {
+                "field": "mem_free",
+                "id": "1",
+                "inlineScript": "_value / 1024 /1024",
+                "meta": {},
+                "settings": {
+                  "script": {
+                    "inline": "_value / 1024 /1024"
+                  }
+                },
+                "type": "avg"
+              }
+            ],
+            "query": "_type:sysload",
+            "refId": "D",
+            "timeField": "timestamp"
+          },
+          {
+            "alias": "mem_used",
+            "bucketAggs": [
+              {
+                "field": "timestamp",
+                "id": "2",
+                "settings": {
+                  "interval": "10s",
+                  "min_doc_count": 0,
+                  "trimEdges": 0
+                },
+                "type": "date_histogram"
+              }
+            ],
+            "metrics": [
+              {
+                "field": "mem_used",
+                "id": "1",
+                "inlineScript": "_value / 1024 / 1024",
+                "meta": {},
+                "settings": {
+                  "script": {
+                    "inline": "_value / 1024 / 1024"
+                  }
+                },
+                "type": "avg"
+              }
+            ],
+            "query": "_type:sysload",
+            "refId": "E",
+            "timeField": "timestamp"
+          }
+        ],
+        "thresholds": [],
+        "timeFrom": null,
+        "timeRegions": [],
+        "timeShift": null,
+        "title": "sysload",
+        "tooltip": {
+          "shared": true,
+          "sort": 0,
+          "value_type": "individual"
+        },
+        "type": "graph",
+        "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": []
+        },
+        "yaxes": [
+          {
+            "decimals": null,
+            "format": "percent",
+            "label": "",
+            "logBase": 1,
+            "max": null,
+            "min": null,
+            "show": true
+          },
+          {
+            "decimals": null,
+            "format": "mbytes",
+            "label": "",
+            "logBase": 1,
+            "max": null,
+            "min": null,
+            "show": true
+          }
+        ],
+        "yaxis": {
+          "align": false,
+          "alignLevel": null
+        }
+      }
+    ],
+    "schemaVersion": 18,
+    "style": "dark",
+    "tags": [],
+    "templating": {
+      "list": []
+    },
+    "time": {
+      "from": "now-6h",
+      "to": "now"
+    },
+    "timepicker": {
+      "refresh_intervals": [
+        "5s",
+        "10s",
+        "30s",
+        "1m",
+        "5m",
+        "15m",
+        "30m",
+        "1h",
+        "2h",
+        "1d"
+      ],
+      "time_options": [
+        "5m",
+        "15m",
+        "1h",
+        "6h",
+        "12h",
+        "24h",
+        "2d",
+        "7d",
+        "30d"
+      ]
+    },
+    "timezone": "",
+    "title": "Monitor",
+    "uid": "azWgjjeik",
+    "version": 4
+  }
