@@ -27,16 +27,31 @@ python setup.py install
 
 ## Usage
 
-```bash
-usage: aidockermon [-h] [-v] [-l] type
-
-positional arguments:
-  type           info type: sysinfo, sysload, gpu, disk, containers
+```
+$ aidockermon -h
+usage: aidockermon [-h] [-v] {query,create-esindex,delete-esindex} ...
 
 optional arguments:
-  -h, --help     show this help message and exit
-  -v, --version  show program's version number and exit
-  -l, --stdout   Print pretty json to console instead of send a log
+  -h, --help            show this help message and exit
+  -v, --version         show program's version number and exit
+
+command:
+  {query,create-esindex,delete-esindex}
+    query               Query system info, log them via syslog protocol
+    create-esindex      Create elasticsearch index
+    delete-esindex      Delete elasticsearch index
+```
+
+```
+$ aidockermon query -h
+usage: aidockermon query [-h] [-l] type
+
+positional arguments:
+  type          info type: sysinfo, sysload, gpu, disk, containers
+
+optional arguments:
+  -h, --help    show this help message and exit
+  -l, --stdout  Print pretty json to console instead of send a log
 ```
 
 **For example:**
@@ -44,7 +59,7 @@ optional arguments:
 Show sysinfo
 
 ```bash
-$ aidockermon -l sysinfo
+$ aidockermon query -l sysinfo
 {
     "gpu": {
         "gpu_num": 2,
@@ -65,7 +80,7 @@ $ aidockermon -l sysinfo
 Show sys load
 
 ```bash
-$ aidockermon -l sysload
+$ aidockermon query -l sysload
 {
     "mem_free": 11866185728,
     "mem_used": 8023793664,
@@ -79,7 +94,7 @@ $ aidockermon -l sysload
 Show gpu load
 
 ```bash
-$ aidockermon -l gpu
+$ aidockermon query -l gpu
 {
     "gpus": [
         {
@@ -105,7 +120,7 @@ $ aidockermon -l gpu
 Show disk usage
 
 ```bash
-$ aidockermon -l disk
+$ aidockermon query -l disk
 {
     "disks": [
         {
@@ -129,7 +144,7 @@ $ aidockermon -l disk
 Show containers' load
 
 ```bash
-$ aidockermon -l containers
+$ aidockermon query -l containers
 {
     "containers": [
         {
