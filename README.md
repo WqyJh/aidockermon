@@ -98,24 +98,22 @@ Show gpu load
 ```bash
 $ aidockermon query -l gpu
 {
-    "gpus": [
-        {
-            "mem_used": 9169,
-            "gpu_temperature": 69.0,
-            "mem_free": 2009,
-            "mem_tot": 11178,
-            "mem_perc": 39.0,
-            "gpu_perc": 83.0
-        },
-        {
-            "mem_used": 10,
-            "gpu_temperature": 35.0,
-            "mem_free": 11168,
-            "mem_tot": 11178,
-            "mem_perc": 0.0,
-            "gpu_perc": 0.0
-        }
-    ]
+    "gpu0": {
+        "gpu_perc": 79.0,
+        "gpu_temperature": 70.0,
+        "mem_free": 2009,
+        "mem_tot": 11178,
+        "mem_used": 9169,
+        "mem_perc": 52.0
+    },
+    "gpu1": {
+        "gpu_perc": 0.0,
+        "gpu_temperature": 35.0,
+        "mem_free": 11168,
+        "mem_tot": 11178,
+        "mem_used": 10,
+        "mem_perc": 0.0
+    }
 }
 ```
 

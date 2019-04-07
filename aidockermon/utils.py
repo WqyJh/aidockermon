@@ -141,7 +141,29 @@ ES_MAPPINGS = {
     },
     "gpu": {
         "properties": {
-            "gpus": {
+            "gpu0": {
+                "properties": {
+                    "gpu_perc": {
+                        "type": "long"
+                    },
+                    "gpu_temperature": {
+                        "type": "float"
+                    },
+                    "mem_used": {
+                        "type": "long"
+                    },
+                    "mem_free": {
+                        "type": "long"
+                    },
+                    "mem_tot": {
+                        "type": "long"
+                    },
+                    "mem_perc": {
+                        "type": "long"
+                    }
+                }
+            },
+            "gpu1": {
                 "properties": {
                     "gpu_perc": {
                         "type": "long"
@@ -256,11 +278,15 @@ def es_res_ack(res):
         return 'Failed'
 
 
-def create_es_index(index, mappings=None, es_url=ES_URL):
+def create_es_index(index, mappings=ES_MAPPINGS, es_url=ES_URL):
+    type = index
+    index = INDEX_PREFIX + type
     print('Creating index <%s>' % (index,), end=' ')
     req_url = '%s/%s' % (es_url, index)
     data = json.dumps({
-        'mappings': mappings,
+        'mappings': {
+            type: mappings[type],
+        },
     })
     headers = {
         'Content-Type': 'application/json',
@@ -271,11 +297,12 @@ def create_es_index(index, mappings=None, es_url=ES_URL):
 
 
 def create_es_indicies(mappings=ES_MAPPINGS, es_url=ES_URL):
-    for k, v in mappings.items():
-        create_es_index(INDEX_PREFIX + k, mappings={k: v}, es_url=es_url)
+    for k in mappings.keys():
+        create_es_index(k, es_url=es_url)
 
 
 def delete_es_index(index, es_url=ES_URL):
+    index = INDEX_PREFIX + index
     print('Deleting index <%s>' % (index,), end=' ')
     req_url = '%s/%s' % (es_url, index)
     res = requests.delete(req_url)
@@ -285,4 +312,4 @@ def delete_es_index(index, es_url=ES_URL):
 
 def delete_es_indicies(mappings=ES_MAPPINGS, es_url=ES_URL):
     for k in mappings.keys():
-        delete_es_index(INDEX_PREFIX + k, es_url=es_url)
+        delete_es_index(k, es_url=es_url)

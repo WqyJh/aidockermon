@@ -126,7 +126,7 @@ def container_pids(container_name):
     return [int(x) for x in output.split()[1:-1]]
 
 
-def _nvidia_smi_query_gpu():
+def nvidia_smi_query_gpu():
     '''
     nvidia-smi --query-gpu=utilization.gpu,utilization.memory,memory.used,memory.free,memory.total,temperature.gpu --format=csv,noheader,nounits
     0, 0, 0, 11178, 11178, 45
@@ -145,20 +145,14 @@ def _nvidia_smi_query_gpu():
 
     reader = csv.reader(io.StringIO(output), skipinitialspace=True)
 
-    return [{
+    return {'gpu%d' % i: {
             'gpu_perc': float(row[0]),
             'mem_perc': float(row[1]),
             'mem_used': int(row[2]),
             'mem_free': int(row[3]),
             'mem_tot': int(row[4]),
             'gpu_temperature': float(row[5]),
-            } for row in reader]
-
-
-def nvidia_smi_query_gpu():
-    return {
-        'gpus': _nvidia_smi_query_gpu(),
-    }
+            } for i, row in enumerate(reader)}
 
 
 def nvidia_smi_query_apps():
