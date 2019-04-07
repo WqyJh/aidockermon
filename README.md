@@ -255,7 +255,7 @@ Using syslog-ng to collect logs and send them to elasticsearch
 for future use such as visualization with kibana.
 
 ```bash
-cp etc/syslog-ng/aidockermon.conf /etc/syslog-ng/conf.d
+cp etc/syslog-ng/syslog-ng.conf /etc/syslog-ng/
 sudo systemctl restart syslog-ng
 ```
 
