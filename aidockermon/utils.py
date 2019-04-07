@@ -245,6 +245,8 @@ ES_MAPPINGS = {
     }
 }
 
+INDEX_PREFIX = 'syslog-ng-'
+
 
 def es_res_ack(res):
     data = json.loads(res.content.decode())
@@ -270,7 +272,7 @@ def create_es_index(index, mappings=None, es_url=ES_URL):
 
 def create_es_indicies(mappings=ES_MAPPINGS, es_url=ES_URL):
     for k, v in mappings.items():
-        create_es_index(k, mappings={k: v}, es_url=es_url)
+        create_es_index(INDEX_PREFIX + k, mappings={k: v}, es_url=es_url)
 
 
 def delete_es_index(index, es_url=ES_URL):
@@ -283,4 +285,4 @@ def delete_es_index(index, es_url=ES_URL):
 
 def delete_es_indicies(mappings=ES_MAPPINGS, es_url=ES_URL):
     for k in mappings.keys():
-        delete_es_index(k, es_url=es_url)
+        delete_es_index(INDEX_PREFIX + k, es_url=es_url)

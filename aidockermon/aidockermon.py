@@ -4,6 +4,7 @@ import os
 import io
 import sys
 import csv
+import json
 import docker
 import psutil
 import logging
@@ -376,6 +377,50 @@ TYPES_MAP = {
 }
 
 
+def parse_repeat(repeat):
+    if repeat:
+        r = repeat.split('/')
+        n, i = int(r[0]), int(r[1])
+    else:
+        n, i = 1, None
+    return n, i
+
+
+def do_repeat(func, n, i):
+    import time
+
+    func()
+
+    for x in range(n - 1):
+        time.sleep(i)
+        func()
+
+
+def _do_query(type, stdout):
+    data = TYPES_MAP[type]()
+
+    if stdout:
+        print(json.dumps(data, indent=4))
+        return
+
+    # ${MESSAGE} = type
+    # ${.SDATA.meta.*} = json data
+    # logger_monitor.info(type, extra={'structured_data': {'meta': data}})
+
+    # We prefer this one!
+    # ${.SDATA.meta.type} = type
+    # ${MESSAGE} = json data
+    logger_monitor.info(json.dumps(data),
+                        extra={'structured_data': {'meta': {'type': type}}})
+
+
+def do_query(type, stdout, repeat):
+    n, i = parse_repeat(repeat)
+
+    def func(): return _do_query(type, stdout)
+    do_repeat(func, n, i)
+
+
 def _main(argv):
     prog = os.path.basename(sys.argv[0])
     parser = argparse.ArgumentParser(prog=prog)
@@ -389,6 +434,8 @@ def _main(argv):
                               ', '.join(TYPES_MAP.keys()))
     parser_query.add_argument('-l', '--stdout', action='store_true', default=False,
                               help="Print pretty json to console instead of send a log")
+    parser_query.add_argument('-r', '--repeat', type=str,
+                              help='n/i repeat n times every i seconds')
 
     parser_ces = subparsers.add_parser(
         'create-esindex', help='Create elasticsearch index')
@@ -414,23 +461,7 @@ def _main(argv):
         if args.type not in TYPES_MAP:
             parser_query.print_help()
         else:
-            import json
-
-            data = TYPES_MAP[args.type]()
-
-            if args.stdout:
-                print(json.dumps(data, indent=4))
-                return
-
-            # ${MESSAGE} = type
-            # ${.SDATA.meta.*} = json data
-            # logger_monitor.info(args.type, extra={'structured_data': {'meta': data}})
-
-            # We prefer this one!
-            # ${.SDATA.meta.type} = type
-            # ${MESSAGE} = json data
-            logger_monitor.info(json.dumps(data),
-                                extra={'structured_data': {'meta': {'type': args.type}}})
+            do_query(args.type, args.stdout, args.repeat)
     elif args.command == 'create-esindex':
         if args.all:
             utils.create_es_indicies(es_url=args.esurl)

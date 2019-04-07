@@ -44,14 +44,16 @@ command:
 
 ```
 $ aidockermon query -h
-usage: aidockermon query [-h] [-l] type
+usage: aidockermon query [-h] [-l] [-r REPEAT] type
 
 positional arguments:
-  type          info type: sysinfo, sysload, gpu, disk, containers
+  type                  info type: sysinfo, sysload, gpu, disk, containers
 
 optional arguments:
-  -h, --help    show this help message and exit
-  -l, --stdout  Print pretty json to console instead of send a log
+  -h, --help            show this help message and exit
+  -l, --stdout          Print pretty json to console instead of send a log
+  -r REPEAT, --repeat REPEAT
+                        n/i repeat n times every i seconds
 ```
 
 **For example:**
