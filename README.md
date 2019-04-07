@@ -7,7 +7,7 @@ Monitor system load of the server running the nvidia/cuda docker containers.
 - sysinfo: system static info
 - sysload: system cpu/memory load
 - gpu: nvidia gpu load
-- disk: disk load (todo: specify disk path)
+- disk: disk load
 - containers: containers' load that based on the nvidia/cuda image
 
 ## Prerequisite
@@ -44,7 +44,7 @@ command:
 
 ```
 $ aidockermon query -h
-usage: aidockermon query [-h] [-l] [-r REPEAT] type
+usage: aidockermon query [-h] [-l] [-r REPEAT] [-f FILTERS [FILTERS ...]] type
 
 positional arguments:
   type                  info type: sysinfo, sysload, gpu, disk, containers
@@ -54,6 +54,9 @@ optional arguments:
   -l, --stdout          Print pretty json to console instead of send a log
   -r REPEAT, --repeat REPEAT
                         n/i repeat n times every i seconds
+  -f FILTERS [FILTERS ...], --filters FILTERS [FILTERS ...]
+                        Filter the disk paths for disk type; filter the
+                        container names for containers type
 ```
 
 **For example:**
@@ -120,13 +123,23 @@ $ aidockermon query -l gpu
 Show disk usage
 
 ```bash
-$ aidockermon query -l disk
+$ aidockermon query disk -l -f /
 {
     "disk0": {
         "disk": "/",
         "total": 454574346240,
-        "used": 91970076672,
-        "free": 339441819648,
+        "used": 91970564096,
+        "free": 339441332224,
+        "percent": 21.3
+    }
+}
+$ aidockermon query disk -l -f / /disk
+{
+    "disk0": {
+        "disk": "/",
+        "total": 454574346240,
+        "used": 91970568192,
+        "free": 339441328128,
         "percent": 21.3
     },
     "disk1": {
@@ -142,30 +155,29 @@ $ aidockermon query -l disk
 Show containers' load
 
 ```bash
-$ aidockermon query -l containers
+$ aidockermon query containers -l -f DianAI
 {
     "DianAI": {
-        "block_read": 16460615680,
+        "mem_used": 7813517312,
+        "net_input": 115643168482,
         "cpu_perc": 0.0,
-        "mem_used": 7753641984,
-        "name": "DianAI",
-        "net_output": 22103065064,
+        "block_read": 16460615680,
+        "mem_perc": 11.591804029902235,
+        "block_write": 89476296704,
         "apps": [
             {
                 "mem_used": 9159,
+                "pid": 4692,
                 "started_time": 1554431776.79,
                 "proc_name": "python3 test_run.py",
-                "pid": 4692,
-                "running_time": "2 11:49:50"
+                "running_time": "2 12:8:38"
             }
         ],
-        "mem_limit": 67405533184,
-        "mem_perc": 11.502975524033799,
-        "block_write": 89476292608,
-        "net_input": 115580793778
+        "name": "DianAI",
+        "net_output": 22105452100,
+        "mem_limit": 67405533184
     }
 }
-
 ```
 
 ## Config

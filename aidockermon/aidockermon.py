@@ -225,9 +225,13 @@ def docker_stats():
     return [_convert_row(row) for row in reader]
 
 
-def docker_stats2():
+def docker_stats2(filters=None):
     client = docker.from_env()
     containers = client.containers.list()
+
+    # Filter the containers by specified container names
+    if isinstance(filters, list):
+        containers = [c for c in containers if c.name in filters]
 
     def _convert_stats(c):
         stats = c.stats(stream=False)
@@ -274,7 +278,8 @@ def docker_stats2():
     }
 
 
-def disk_usage(mountpoints=['/', '/disk']):
+def disk_usage(filters=['/', '/disk']):
+    mountpoints = filters
     devices = psutil.disk_partitions()
     mount_device = {}
     for m in mountpoints:
@@ -320,9 +325,9 @@ def sys_load():
     }
 
 
-def get_container_stats():
+def get_container_stats(filters=None):
     apps = nvidia_smi_query_apps()
-    container_stats = docker_stats2()
+    container_stats = docker_stats2(filters=filters)
 
     for v in container_stats.values():
         v['pids'] = container_pids(v['name'])
@@ -391,8 +396,9 @@ def do_repeat(func, n, i):
         func()
 
 
-def _do_query(type, stdout):
-    data = TYPES_MAP[type]()
+def _do_query(type, stdout, filters=None):
+    func = TYPES_MAP[type]
+    data = func(filters=filters) if filters else func()
 
     if stdout:
         print(json.dumps(data, indent=4))
@@ -409,10 +415,10 @@ def _do_query(type, stdout):
                         extra={'structured_data': {'meta': {'type': type}}})
 
 
-def do_query(type, stdout, repeat):
+def do_query(type, stdout, repeat, filters=None):
     n, i = parse_repeat(repeat)
 
-    def func(): return _do_query(type, stdout)
+    def func(): return _do_query(type, stdout, filters=filters)
     do_repeat(func, n, i)
 
 
@@ -431,6 +437,8 @@ def _main(argv):
                               help="Print pretty json to console instead of send a log")
     parser_query.add_argument('-r', '--repeat', type=str,
                               help='n/i repeat n times every i seconds')
+    parser_query.add_argument('-f', '--filters', nargs='+', type=str,
+                            help='Filter the disk paths for disk type; filter the container names for containers type')
 
     parser_ces = subparsers.add_parser(
         'create-esindex', help='Create elasticsearch index')
@@ -456,7 +464,7 @@ def _main(argv):
         if args.type not in TYPES_MAP:
             parser_query.print_help()
         else:
-            do_query(args.type, args.stdout, args.repeat)
+            do_query(args.type, args.stdout, args.repeat, filters=args.filters)
     elif args.command == 'create-esindex':
         if args.all:
             utils.create_es_indicies(es_url=args.esurl)
