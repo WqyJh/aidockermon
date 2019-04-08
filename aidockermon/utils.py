@@ -111,14 +111,25 @@ ES_MAPPINGS = {
         "properties": {
             "disks": {
                 "properties": {
-                    "disk": {
+                    "path": {
                         "type": "text",
                         "fields": {
                                 "keyword": {
                                     "type": "keyword",
                                     "ignore_above": 256
                                 }
-                        }
+                        },
+                        "fielddata" : True
+                    },
+                    "device": {
+                        "type": "text",
+                        "fields": {
+                                "keyword": {
+                                    "type": "keyword",
+                                    "ignore_above": 256
+                                }
+                        },
+                        "fielddata" : True
                     },
                     "free": {
                         "type": "long"

@@ -289,7 +289,8 @@ def disk_usage(mountpoints=['/', '/disk']):
         try:
             du = psutil.disk_usage(m)
             return {
-                'disk': m,
+                'path': m,
+                'device': mount_device[m],
                 'total': du.total,
                 'used': du.used,
                 'free': du.free,
@@ -298,7 +299,8 @@ def disk_usage(mountpoints=['/', '/disk']):
         except OSError as e:
             logger_runtime.critical(e)
             return {
-                'disk': m,
+                'path': m,
+                'device': '',
                 'total': 0,
                 'used': 0,
                 'free': 0,
