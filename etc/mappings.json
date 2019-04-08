@@ -42,15 +42,6 @@
                     }
                 }
             },
-            "hostname": {
-                "type": "text",
-                "fields": {
-                    "keyword": {
-                        "type": "keyword",
-                        "ignore_above": 256
-                    }
-                }
-            },
             "kernel": {
                 "type": "text",
                 "fields": {
@@ -74,6 +65,16 @@
             },
             "timestamp": {
                 "type": "date"
+            },
+            "host": {
+                "type": "text",
+                "fielddata" : true,
+                "fields": {
+                    "keyword": {
+                        "type": "keyword",
+                        "ignore_above": 256
+                    }
+                }
             }
         }
     },
@@ -99,200 +100,189 @@
             },
             "timestamp": {
                 "type": "date"
+            },
+            "host": {
+                "type": "text",
+                "fielddata" : true,
+                "fields": {
+                    "keyword": {
+                        "type": "keyword",
+                        "ignore_above": 256
+                    }
+                }
             }
         }
     },
     "disk": {
         "properties": {
-            "disk0": {
-                "properties": {
-                    "disk": {
-                        "type": "text",
-                        "fields": {
-                            "keyword": {
-                                "type": "keyword",
-                                "ignore_above": 256
-                            }
-                        }
-                    },
-                    "free": {
-                        "type": "long"
-                    },
-                    "percent": {
-                        "type": "float"
-                    },
-                    "total": {
-                        "type": "long"
-                    },
-                    "used": {
-                        "type": "long"
+            "path": {
+                "type": "text",
+                "fielddata" : true,
+                "fields": {
+                    "keyword": {
+                        "type": "keyword",
+                        "ignore_above": 256
                     }
                 }
             },
-            "disk1": {
-                "properties": {
-                    "path": {
-                        "type": "text",
-                        "fields": {
-                            "keyword": {
-                                "type": "keyword",
-                                "ignore_above": 256
-                            }
-                        },
-                        "fielddata": true
-                    },
-                    "device": {
-                        "type": "text",
-                        "fields": {
-                            "keyword": {
-                                "type": "keyword",
-                                "ignore_above": 256
-                            }
-                        },
-                        "fielddata": true
-                    },
-                    "free": {
-                        "type": "long"
-                    },
-                    "percent": {
-                        "type": "float"
-                    },
-                    "total": {
-                        "type": "long"
-                    },
-                    "used": {
-                        "type": "long"
-                    }
-                }
+            "free": {
+                "type": "long"
+            },
+            "percent": {
+                "type": "float"
+            },
+            "total": {
+                "type": "long"
+            },
+            "used": {
+                "type": "long"
             },
             "timestamp": {
                 "type": "date"
+            },
+            "host": {
+                "type": "text",
+                "fielddata" : true,
+                "fields": {
+                    "keyword": {
+                        "type": "keyword",
+                        "ignore_above": 256
+                    }
+                }
             }
         }
     },
     "gpu": {
         "properties": {
-            "gpu0": {
-                "properties": {
-                    "gpu_perc": {
-                        "type": "long"
-                    },
-                    "gpu_temperature": {
-                        "type": "float"
-                    },
-                    "mem_used": {
-                        "type": "long"
-                    },
-                    "mem_free": {
-                        "type": "long"
-                    },
-                    "mem_tot": {
-                        "type": "long"
-                    },
-                    "mem_perc": {
-                        "type": "long"
-                    }
-                }
+            "gpu_id": {
+                "type": "long"
             },
-            "gpu1": {
-                "properties": {
-                    "gpu_perc": {
-                        "type": "long"
-                    },
-                    "gpu_temperature": {
-                        "type": "float"
-                    },
-                    "mem_used": {
-                        "type": "long"
-                    },
-                    "mem_free": {
-                        "type": "long"
-                    },
-                    "mem_tot": {
-                        "type": "long"
-                    },
-                    "mem_perc": {
-                        "type": "long"
-                    }
-                }
+            "gpu_perc": {
+                "type": "long"
+            },
+            "gpu_temperature": {
+                "type": "float"
+            },
+            "mem_used": {
+                "type": "long"
+            },
+            "mem_free": {
+                "type": "long"
+            },
+            "mem_tot": {
+                "type": "long"
+            },
+            "mem_perc": {
+                "type": "long"
             },
             "timestamp": {
                 "type": "date"
+            },
+            "host": {
+                "type": "text",
+                "fielddata" : true,
+                "fields": {
+                    "keyword": {
+                        "type": "keyword",
+                        "ignore_above": 256
+                    }
+                }
+            }
+        }
+    },
+    "app": {
+        "properties": {
+            "running_time": {
+                "type": "text",
+                "fields": {
+                    "keyword": {
+                        "type": "keyword",
+                        "ignore_above": 256
+                    }
+                }
+            },
+            "proc_name": {
+                "type": "text",
+                "fielddata" : true,
+                "fields": {
+                    "keyword": {
+                        "type": "keyword",
+                        "ignore_above": 256
+                    }
+                }
+            },
+            "pid": {
+                "type": "long"
+            },
+            "started_time": {
+                "type": "float"
+            },
+            "mem_used": {
+                "type": "long"
+            },
+            "timestamp": {
+                "type": "date"
+            },
+            "host": {
+                "type": "text",
+                "fielddata" : true,
+                "fields": {
+                    "keyword": {
+                        "type": "keyword",
+                        "ignore_above": 256
+                    }
+                }
             }
         }
     },
     "containers": {
         "properties": {
-            "containers": {
-                "properties": {
-                    "block_read": {
-                        "type": "long"
-                    },
-                    "block_write": {
-                        "type": "long"
-                    },
-                    "cpu_perc": {
-                        "type": "float"
-                    },
-                    "mem_limit": {
-                        "type": "long"
-                    },
-                    "mem_perc": {
-                        "type": "float"
-                    },
-                    "mem_used": {
-                        "type": "long"
-                    },
-                    "name": {
-                        "type": "text",
-                        "fields": {
-                            "keyword": {
-                                "type": "keyword",
-                                "ignore_above": 256
-                            }
-                        }
-                    },
-                    "net_input": {
-                        "type": "long"
-                    },
-                    "net_output": {
-                        "type": "long"
-                    },
-                    "apps": {
-                        "properties": {
-                            "running_time": {
-                                "type": "text",
-                                "fields": {
-                                    "keyword": {
-                                        "type": "keyword",
-                                        "ignore_above": 256
-                                    }
-                                }
-                            },
-                            "proc_name": {
-                                "type": "text",
-                                "fields": {
-                                    "keyword": {
-                                        "type": "keyword",
-                                        "ignore_above": 256
-                                    }
-                                }
-                            },
-                            "pid": {
-                                "type": "long"
-                            },
-                            "started_time": {
-                                "type": "float"
-                            },
-                            "mem_used": {
-                                "type": "long"
-                            }
-                        }
+            "block_read": {
+                "type": "long"
+            },
+            "block_write": {
+                "type": "long"
+            },
+            "cpu_perc": {
+                "type": "float"
+            },
+            "mem_limit": {
+                "type": "long"
+            },
+            "mem_perc": {
+                "type": "float"
+            },
+            "mem_used": {
+                "type": "long"
+            },
+            "name": {
+                "type": "text",
+                "fielddata" : true,
+                "fields": {
+                    "keyword": {
+                        "type": "keyword",
+                        "ignore_above": 256
                     }
                 }
             },
+            "net_input": {
+                "type": "long"
+            },
+            "net_output": {
+                "type": "long"
+            },
             "timestamp": {
                 "type": "date"
+            },
+            "host": {
+                "type": "text",
+                "fielddata" : true,
+                "fields": {
+                    "keyword": {
+                        "type": "keyword",
+                        "ignore_above": 256
+                    }
+                }
             }
         }
     }

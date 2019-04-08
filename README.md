@@ -73,7 +73,6 @@ $ aidockermon query -l sysinfo
     },
     "mem_tot": 67405533184,
     "kernel": "4.4.0-142-generic",
-    "hostname": "qiming3",
     "cpu_num": 12,
     "docker": {
         "version": "18.09.3"

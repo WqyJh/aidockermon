@@ -109,7 +109,6 @@ def sys_static_info():
 
     return {
         'system': uname.system,
-        'hostname': uname.node,
         'kernel': uname.release,
         'cpu_num': psutil.cpu_count(),
         'mem_tot': psutil.virtual_memory().total,

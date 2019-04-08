@@ -4,7 +4,7 @@ import pkg_resources
 
 ES_URL = 'http://localhost:9200'
 
-ES_MAPPINGS = json.loads(pkg_resources.resource_string('etc', 'mappings.json'))
+ES_MAPPINGS = json.loads(pkg_resources.resource_string('etc', 'mappings.json').decode())
 
 INDEX_PREFIX = 'syslog-ng-'
 
