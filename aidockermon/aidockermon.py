@@ -145,14 +145,15 @@ def nvidia_smi_query_gpu():
 
     reader = csv.reader(io.StringIO(output), skipinitialspace=True)
 
-    return {'gpu%d' % i: {
+    return [{
+            'gpu_id': i,
             'gpu_perc': float(row[0]),
             'mem_perc': float(row[1]),
             'mem_used': int(row[2]),
             'mem_free': int(row[3]),
             'mem_tot': int(row[4]),
             'gpu_temperature': float(row[5]),
-            } for i, row in enumerate(reader)}
+            } for i, row in enumerate(reader)]
 
 
 def nvidia_smi_query_apps():
@@ -273,9 +274,7 @@ def docker_stats2(filters=None):
             'block_write': int(blk_write),
         }
 
-    return {
-        c.name: _convert_stats(c) for c in containers
-    }
+    return [_convert_stats(c) for c in containers]
 
 
 def disk_usage(filters=['/', '/disk']):
@@ -309,9 +308,7 @@ def disk_usage(filters=['/', '/disk']):
                 'percent': 0,
             }
 
-    return {
-        'disk%d' % i: _disk_usage(m) for i, m in enumerate(mountpoints)
-    }
+    return [_disk_usage(m) for i, m in enumerate(mountpoints)]
 
 
 def sys_load():
@@ -331,43 +328,21 @@ def get_container_stats(filters=None):
     apps = nvidia_smi_query_apps()
     container_stats = docker_stats2(filters=filters)
 
-    for v in container_stats.values():
-        v['pids'] = container_pids(v['name'])
-        v['apps'] = []
-
-    for app in apps:
-        for v in container_stats.values():
-            if app['pid'] in v['pids']:
-                v['apps'].append(app)
-
-    for v in container_stats.values():
-        del v['pids']
-
-    return container_stats
-
-
-def sys_dynamic_info():
-    apps = nvidia_smi_query_apps()
-    container_stats = docker_stats2()
-
     for s in container_stats:
         s['pids'] = container_pids(s['name'])
-        s['apps'] = []
 
     for app in apps:
         for s in container_stats:
             if app['pid'] in s['pids']:
-                s['apps'].append(app)
+                app['container'] = s['name']
 
     for s in container_stats:
         del s['pids']
 
-    return {
-        'containers': container_stats,
-        'gpu_info': nvidia_smi_query_gpu(),
-        'sys_load': sys_load(),
-        'disk_usage': disk_usage(),
-    }
+    return (
+        ('app', apps),
+        ('containers', container_stats),
+    )
 
 
 TYPES_MAP = {
@@ -402,19 +377,33 @@ def _do_query(type, stdout, filters=None):
     func = TYPES_MAP[type]
     data = func(filters=filters) if filters else func()
 
-    if stdout:
-        print(json.dumps(data, indent=4))
-        return
+    def _handle_data(data, type):
+        if stdout:
+            print(json.dumps(data, indent=4))
+            return
 
-    # ${MESSAGE} = type
-    # ${.SDATA.meta.*} = json data
-    # logger_monitor.info(type, extra={'structured_data': {'meta': data}})
+        # ${MESSAGE} = type
+        # ${.SDATA.meta.*} = json data
+        # logger_monitor.info(type, extra={'structured_data': {'meta': data}})
 
-    # We prefer this one!
-    # ${.SDATA.meta.type} = type
-    # ${MESSAGE} = json data
-    logger_monitor.info(json.dumps(data),
-                        extra={'structured_data': {'meta': {'type': type}}})
+        # We prefer this one!
+        # ${.SDATA.meta.type} = type
+        # ${MESSAGE} = json data
+        logger_monitor.info(json.dumps(data),
+                            extra={'structured_data': {'meta': {'type': type}}})
+
+    def _handle_one_or_more_data(data, type):
+        if isinstance(data, list):
+            for d in data:
+                _handle_data(d, type)
+        else:
+            _handle_data(data, type)
+
+    if isinstance(data, tuple):
+        for t, d in data:
+            _handle_one_or_more_data(d, t)
+    else:
+        _handle_one_or_more_data(data, type)
 
 
 def do_query(type, stdout, repeat, filters=None):
@@ -440,7 +429,7 @@ def _main(argv):
     parser_query.add_argument('-r', '--repeat', type=str,
                               help='n/i repeat n times every i seconds')
     parser_query.add_argument('-f', '--filters', nargs='+', type=str,
-                            help='Filter the disk paths for disk type; filter the container names for containers type')
+                              help='Filter the disk paths for disk type; filter the container names for containers type')
 
     parser_ces = subparsers.add_parser(
         'create-esindex', help='Create elasticsearch index')

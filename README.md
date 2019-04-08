@@ -101,22 +101,22 @@ Show gpu load
 ```bash
 $ aidockermon query -l gpu
 {
-    "gpu0": {
-        "gpu_perc": 79.0,
-        "gpu_temperature": 70.0,
-        "mem_free": 2009,
-        "mem_tot": 11178,
-        "mem_used": 9169,
-        "mem_perc": 52.0
-    },
-    "gpu1": {
-        "gpu_perc": 0.0,
-        "gpu_temperature": 35.0,
-        "mem_free": 11168,
-        "mem_tot": 11178,
-        "mem_used": 10,
-        "mem_perc": 0.0
-    }
+    "mem_tot": 11177,
+    "gpu_temperature": 76.0,
+    "mem_free": 1047,
+    "mem_used": 10130,
+    "gpu_perc": 98.0,
+    "gpu_id": 0,
+    "mem_perc": 46.0
+}
+{
+    "mem_tot": 11178,
+    "gpu_temperature": 66.0,
+    "mem_free": 3737,
+    "mem_used": 7441,
+    "gpu_perc": 95.0,
+    "gpu_id": 1,
+    "mem_perc": 44.0
 }
 ```
 
@@ -125,30 +125,30 @@ Show disk usage
 ```bash
 $ aidockermon query disk -l -f /
 {
-    "disk0": {
-        "disk": "/",
-        "total": 454574346240,
-        "used": 91970564096,
-        "free": 339441332224,
-        "percent": 21.3
-    }
+    "path": "/",
+    "device": "/dev/nvme0n1p3",
+    "total": 250702176256,
+    "used": 21078355968,
+    "free": 216865271808,
+    "percent": 8.9
 }
+
 $ aidockermon query disk -l -f / /disk
 {
-    "disk0": {
-        "disk": "/",
-        "total": 454574346240,
-        "used": 91970568192,
-        "free": 339441328128,
-        "percent": 21.3
-    },
-    "disk1": {
-        "disk": "/disk",
-        "total": 0,
-        "used": 0,
-        "free": 0,
-        "percent": 0
-    }
+    "path": "/",
+    "device": "/dev/nvme0n1p3",
+    "total": 250702176256,
+    "used": 21078355968,
+    "free": 216865271808,
+    "percent": 8.9
+}
+{
+    "path": "/disk",
+    "device": "/dev/sda1",
+    "total": 1968874311680,
+    "used": 1551374692352,
+    "free": 317462949888,
+    "percent": 83.0
 }
 ```
 
@@ -157,26 +157,39 @@ Show containers' load
 ```bash
 $ aidockermon query containers -l -f DianAI
 {
-    "DianAI": {
-        "mem_used": 7813517312,
-        "net_input": 115643168482,
-        "cpu_perc": 0.0,
-        "block_read": 16460615680,
-        "mem_perc": 11.591804029902235,
-        "block_write": 89476296704,
-        "apps": [
-            {
-                "mem_used": 9159,
-                "pid": 4692,
-                "started_time": 1554431776.79,
-                "proc_name": "python3 test_run.py",
-                "running_time": "2 12:8:38"
-            }
-        ],
-        "name": "DianAI",
-        "net_output": 22105452100,
-        "mem_limit": 67405533184
-    }
+    "proc_name": "python3 test_run.py",
+    "container": "DianAI",
+    "started_time": 1554698236.51,
+    "pid": 29794,
+    "running_time": "0 6:58:58",
+    "mem_used": 8623
+}
+{
+    "proc_name": "python train.py",
+    "container": "DianAI",
+    "started_time": 1554707562.59,
+    "pid": 15721,
+    "running_time": "0 4:23:32",
+    "mem_used": 1497
+}
+{
+    "proc_name": "python train_end2end.py",
+    "container": "UniqueAI",
+    "started_time": 1554712634.14,
+    "pid": 11796,
+    "running_time": "0 2:59:0",
+    "mem_used": 6999
+}
+{
+    "mem_limit": 67481047040,
+    "net_output": 47863240948,
+    "block_read": 1327175626752,
+    "net_input": 18802869033,
+    "mem_perc": 14.637655604461704,
+    "block_write": 132278439936,
+    "name": "DianAI",
+    "cpu_perc": 0.0,
+    "mem_used": 9877643264
 }
 ```
 
