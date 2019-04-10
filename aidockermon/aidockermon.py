@@ -122,7 +122,7 @@ def container_pids(container_name):
     if output is None:
         return []
 
-    return [int(x) for x in output.split()[1:-1]]
+    return [int(x) for x in output.split()[1:]]
 
 
 def nvidia_smi_query_gpu():
