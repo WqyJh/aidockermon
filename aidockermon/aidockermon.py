@@ -49,6 +49,13 @@ def strfcreate(tcreate, fmt='%D %H:%M:%S'):
     return strfdelta(now - start)
 
 
+def get_running_time(tcreate):
+    import time
+
+    tnow = time.time()
+    return int(tnow - tcreate)
+
+
 def fastfail_call(args):
     output = None
     try:
@@ -176,15 +183,13 @@ def nvidia_smi_query_apps():
 
         p = psutil.Process(pid)
         proc_name = ' '.join(p.cmdline())
-        started_time = int(p.create_time())
-        running_time = strfcreate(started_time)
+        running_time = get_running_time(p.create_time())
 
         return {
             'pid': pid,
             'proc_name': proc_name,
             'mem_used': mem_used,
             'running_time': running_time,
-            'started_time': started_time,
         }
 
     reader = csv.reader(io.StringIO(output), skipinitialspace=True)

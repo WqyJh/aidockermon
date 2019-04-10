@@ -192,15 +192,6 @@
     },
     "app": {
         "properties": {
-            "running_time": {
-                "type": "text",
-                "fields": {
-                    "keyword": {
-                        "type": "keyword",
-                        "ignore_above": 256
-                    }
-                }
-            },
             "proc_name": {
                 "type": "text",
                 "fielddata" : true,
@@ -214,7 +205,7 @@
             "pid": {
                 "type": "long"
             },
-            "started_time": {
+            "running_time": {
                 "type": "long"
             },
             "mem_used": {
