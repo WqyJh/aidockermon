@@ -215,7 +215,7 @@
                 "type": "long"
             },
             "started_time": {
-                "type": "float"
+                "type": "long"
             },
             "mem_used": {
                 "type": "long"

@@ -176,7 +176,7 @@ def nvidia_smi_query_apps():
 
         p = psutil.Process(pid)
         proc_name = ' '.join(p.cmdline())
-        started_time = p.create_time()
+        started_time = int(p.create_time())
         running_time = strfcreate(started_time)
 
         return {
