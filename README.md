@@ -158,6 +158,7 @@ $ aidockermon query containers -l -f DianAI
 {
     "container": "DianAI",
     "proc_name": "python3 test_run.py",
+    "started_time": 1554698236,
     "running_time": 9343,
     "pid": 7695,
     "mem_used": 9757
@@ -166,6 +167,7 @@ $ aidockermon query containers -l -f DianAI
     "proc_name": "python train.py",
     "container": "DianAI",
     "pid": 15721,
+    "started_time": 1554698236,
     "running_time": 19343,
     "mem_used": 1497
 }
@@ -173,6 +175,7 @@ $ aidockermon query containers -l -f DianAI
     "proc_name": "python train_end2end.py",
     "container": "UniqueAI",
     "pid": 11796,
+    "started_time": 1554698236,
     "running_time": 8276,
     "mem_used": 6999
 }
