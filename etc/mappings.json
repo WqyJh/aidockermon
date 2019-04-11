@@ -205,6 +205,9 @@
             "pid": {
                 "type": "long"
             },
+            "create_time": {
+                "type": "long"
+            },
             "running_time": {
                 "type": "long"
             },

@@ -183,12 +183,14 @@ def nvidia_smi_query_apps():
 
         p = psutil.Process(pid)
         proc_name = ' '.join(p.cmdline())
+        create_time = int(p.create_time())
         running_time = get_running_time(p.create_time())
 
         return {
             'pid': pid,
             'proc_name': proc_name,
             'mem_used': mem_used,
+            'create_time': create_time,
             'running_time': running_time,
         }
 
