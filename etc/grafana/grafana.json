@@ -16,7 +16,7 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": 2,
-  "iteration": 1554965443460,
+  "iteration": 1563539233452,
   "links": [],
   "panels": [
     {
@@ -1810,7 +1810,7 @@
     ]
   },
   "timezone": "",
-  "title": "Monitor",
+  "title": "AI Monitor",
   "uid": "9ITS8q6mk",
-  "version": 28
+  "version": 29
 }
