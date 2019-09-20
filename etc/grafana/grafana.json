@@ -15,8 +15,8 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "id": 2,
-  "iteration": 1563539233452,
+  "id": 1,
+  "iteration": 1568978982326,
   "links": [],
   "panels": [
     {
@@ -31,6 +31,7 @@
       "id": 14,
       "interval": "",
       "links": [],
+      "options": {},
       "pageSize": null,
       "scroll": true,
       "showHeader": true,
@@ -221,6 +222,7 @@
       "dashes": false,
       "description": "",
       "fill": 1,
+      "fillGradient": 0,
       "gridPos": {
         "h": 9,
         "w": 12,
@@ -244,6 +246,9 @@
       "linewidth": 1,
       "links": [],
       "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
       "percentage": false,
       "pointradius": 2,
       "points": false,
@@ -281,7 +286,7 @@
               "field": "timestamp",
               "id": "2",
               "settings": {
-                "interval": "auto",
+                "interval": "1m",
                 "min_doc_count": 0,
                 "trimEdges": 0
               },
@@ -320,7 +325,7 @@
               "field": "timestamp",
               "id": "2",
               "settings": {
-                "interval": "auto",
+                "interval": "1m",
                 "min_doc_count": 0,
                 "trimEdges": 0
               },
@@ -359,7 +364,7 @@
               "field": "timestamp",
               "id": "2",
               "settings": {
-                "interval": "auto",
+                "interval": "1m",
                 "min_doc_count": 0,
                 "trimEdges": 0
               },
@@ -403,7 +408,7 @@
               "field": "timestamp",
               "id": "2",
               "settings": {
-                "interval": "auto",
+                "interval": "1m",
                 "min_doc_count": 0,
                 "trimEdges": 0
               },
@@ -476,6 +481,7 @@
       "dashLength": 10,
       "dashes": false,
       "fill": 1,
+      "fillGradient": 0,
       "gridPos": {
         "h": 9,
         "w": 12,
@@ -499,6 +505,9 @@
       "linewidth": 1,
       "links": [],
       "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
       "percentage": false,
       "pointradius": 2,
       "points": false,
@@ -765,6 +774,7 @@
       "dashLength": 10,
       "dashes": false,
       "fill": 1,
+      "fillGradient": 0,
       "gridPos": {
         "h": 8,
         "w": 12,
@@ -788,6 +798,9 @@
       "linewidth": 1,
       "links": [],
       "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
       "percentage": false,
       "pointradius": 2,
       "points": false,
@@ -1003,6 +1016,7 @@
       "dashLength": 10,
       "dashes": false,
       "fill": 1,
+      "fillGradient": 0,
       "gridPos": {
         "h": 8,
         "w": 12,
@@ -1026,6 +1040,9 @@
       "linewidth": 1,
       "links": [],
       "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
       "percentage": false,
       "pointradius": 2,
       "points": false,
@@ -1075,7 +1092,7 @@
               "field": "timestamp",
               "id": "2",
               "settings": {
-                "interval": "20s",
+                "interval": "3m",
                 "min_doc_count": 0,
                 "trimEdges": 0
               },
@@ -1126,7 +1143,7 @@
               "field": "timestamp",
               "id": "2",
               "settings": {
-                "interval": "20s",
+                "interval": "3m",
                 "min_doc_count": 0,
                 "trimEdges": 0
               },
@@ -1177,7 +1194,7 @@
               "field": "timestamp",
               "id": "2",
               "settings": {
-                "interval": "20s",
+                "interval": "3m",
                 "min_doc_count": 0,
                 "trimEdges": 0
               },
@@ -1228,7 +1245,7 @@
               "field": "timestamp",
               "id": "2",
               "settings": {
-                "interval": "20s",
+                "interval": "3m",
                 "min_doc_count": 0,
                 "trimEdges": 0
               },
@@ -1296,6 +1313,7 @@
       "dashLength": 10,
       "dashes": false,
       "fill": 1,
+      "fillGradient": 0,
       "gridPos": {
         "h": 8,
         "w": 12,
@@ -1319,6 +1337,9 @@
       "linewidth": 1,
       "links": [],
       "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
       "percentage": false,
       "pointradius": 2,
       "points": false,
@@ -1370,7 +1391,7 @@
               "field": "timestamp",
               "id": "2",
               "settings": {
-                "interval": "10s",
+                "interval": "2m",
                 "min_doc_count": 0,
                 "trimEdges": 0
               },
@@ -1421,7 +1442,7 @@
               "field": "timestamp",
               "id": "2",
               "settings": {
-                "interval": "10s",
+                "interval": "2m",
                 "min_doc_count": 0,
                 "trimEdges": 0
               },
@@ -1472,7 +1493,7 @@
               "field": "timestamp",
               "id": "2",
               "settings": {
-                "interval": "10s",
+                "interval": "2m",
                 "min_doc_count": 0,
                 "trimEdges": 0
               },
@@ -1540,6 +1561,7 @@
       "dashLength": 10,
       "dashes": false,
       "fill": 1,
+      "fillGradient": 0,
       "gridPos": {
         "h": 8,
         "w": 12,
@@ -1563,6 +1585,9 @@
       "linewidth": 1,
       "links": [],
       "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
       "percentage": false,
       "pointradius": 2,
       "points": false,
@@ -1603,7 +1628,7 @@
               "field": "timestamp",
               "id": "2",
               "settings": {
-                "interval": "20s",
+                "interval": "2m",
                 "min_doc_count": 0,
                 "trimEdges": 0
               },
@@ -1667,7 +1692,7 @@
     }
   ],
   "refresh": false,
-  "schemaVersion": 18,
+  "schemaVersion": 19,
   "style": "dark",
   "tags": [],
   "templating": {
@@ -1812,5 +1837,5 @@
   "timezone": "",
   "title": "AI Monitor",
   "uid": "9ITS8q6mk",
-  "version": 29
+  "version": 3
 }
