@@ -182,12 +182,14 @@ def nvidia_smi_query_apps():
         mem_used = int(row[1])
 
         p = psutil.Process(pid)
+        app_name = p.environ().get('APP_NAME', '')
         proc_name = ' '.join(p.cmdline())
         create_time = int(p.create_time())
         running_time = get_running_time(p.create_time())
 
         return {
             'pid': pid,
+            'app_name': app_name,
             'proc_name': proc_name,
             'mem_used': mem_used,
             'create_time': create_time,
@@ -385,7 +387,7 @@ def _do_query(type, stdout, filters=None):
 
     def _handle_data(data, type):
         if stdout:
-            print(json.dumps(data, indent=4))
+            print(json.dumps(data, ensure_ascii=False, indent=4))
             return
 
         # ${MESSAGE} = type
@@ -395,8 +397,8 @@ def _do_query(type, stdout, filters=None):
         # We prefer this one!
         # ${.SDATA.meta.type} = type
         # ${MESSAGE} = json data
-        logger_monitor.info(json.dumps(data),
-                            extra={'structured_data': {'meta': {'type': type}}})
+        logger_monitor.info(json.dumps(data, ensure_ascii=False),
+                            extra={'structured_data': {'meta': {'type': 'test'}}})
 
     def _handle_one_or_more_data(data, type):
         if isinstance(data, list):

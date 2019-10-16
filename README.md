@@ -153,31 +153,28 @@ $ aidockermon query disk -l -f / /disk
 
 Show containers' load
 
+Note that the `app_name` would be read from environment variable `APP_NAME`, which
+is a short description for this training program.
+
 ```bash
 $ aidockermon query containers -l -f DianAI
 {
-    "container": "DianAI",
     "proc_name": "python3 test_run.py",
+    "app_name": "测试程序",
+    "pid": 13540,
+    "container": "DianAI",
     "started_time": 1554698236,
     "running_time": 9343,
-    "pid": 7695,
     "mem_used": 9757
 }
 {
     "proc_name": "python train.py",
-    "container": "DianAI",
+    "app_name": "",
     "pid": 15721,
+    "container": "DianAI",
     "started_time": 1554698236,
     "running_time": 19343,
     "mem_used": 1497
-}
-{
-    "proc_name": "python train_end2end.py",
-    "container": "UniqueAI",
-    "pid": 11796,
-    "started_time": 1554698236,
-    "running_time": 8276,
-    "mem_used": 6999
 }
 {
     "mem_limit": 67481047040,
