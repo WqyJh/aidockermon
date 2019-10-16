@@ -1,5 +1,8 @@
 # aidockermon
 
+[![Build Status](https://travis-ci.org/WqyJh/aidockermon.svg?branch=master)](https://travis-ci.org/WqyJh/aidockermon)
+[![license](https://img.shields.io/badge/LICENCE-GPLv3-brightgreen.svg)](https://raw.githubusercontent.com/WqyJh/aidockermon/master/LICENSE)
+
 Monitor system load of the server running the nvidia/cuda docker containers.
 
 ## Feature
