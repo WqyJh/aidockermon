@@ -1,9 +1,7 @@
-import io
-import os
-import sys
-import platform
-import unittest
 import setuptools
+
+from pipenv.project import Project
+from pipenv.utils import convert_deps_to_pip
 
 from aidockermon import __version__
 
@@ -14,15 +12,9 @@ def read_requirements_txt(default=[]):
     return r if r else default
 
 
-tests_require = []
-
-install_requires = []
-
-dependency_links = []
-
-
-requirements_txt = read_requirements_txt()
-install_requires.extend(requirements_txt)
+pfile = Project(chdir=False).parsed_pipfile
+requirements = convert_deps_to_pip(pfile['packages'], r=False)
+test_requirements = convert_deps_to_pip(pfile['dev-packages'], r=False)
 
 
 # entry points
@@ -33,18 +25,9 @@ entry_points = {
 }
 
 
-# test suite
-def load_test_suite():
-    test_loader = unittest.TestLoader()
-    test_suite = test_loader.discover('tests', top_level_dir='./')
-    return test_suite
-
-
 setuptools.setup(
     version=__version__,
-    tests_require=tests_require,
-    install_requires=install_requires,
-    dependency_links=dependency_links,
-    test_suite="setup.load_test_suite",
-    entry_points=entry_points
+    install_requires=requirements,
+    test_require=test_requirements,
+    entry_points=entry_points,
 )
