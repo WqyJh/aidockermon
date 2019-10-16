@@ -306,11 +306,3 @@ log {
 ```
 Modify it to specify the elasticsearch server and the log source's port and protocol.
 
-## Contribute
-
-Use the following command to generate `requirements.txt`, other wise there would be
-one line `pkg-resources==0.0.0` which cause a failure to install dependencies.
-
-```bash
-pip freeze | grep -v "pkg-resources" > requirements.txt
-```
