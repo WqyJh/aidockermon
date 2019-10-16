@@ -398,7 +398,7 @@ def _do_query(type, stdout, filters=None):
         # ${.SDATA.meta.type} = type
         # ${MESSAGE} = json data
         logger_monitor.info(json.dumps(data, ensure_ascii=False),
-                            extra={'structured_data': {'meta': {'type': 'test'}}})
+                            extra={'structured_data': {'meta': {'type': type}}})
 
     def _handle_one_or_more_data(data, type):
         if isinstance(data, list):
