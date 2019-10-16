@@ -16,11 +16,12 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": 1,
-  "iteration": 1568978982326,
+  "iteration": 1571220987766,
   "links": [],
   "panels": [
     {
       "columns": [],
+      "description": "",
       "fontSize": "100%",
       "gridPos": {
         "h": 8,
@@ -77,6 +78,8 @@
           "decimals": 2,
           "mappingType": 1,
           "pattern": "proc_name.keyword",
+          "preserveFormat": false,
+          "sanitize": false,
           "thresholds": [],
           "type": "string",
           "unit": "short"
@@ -128,6 +131,23 @@
           "thresholds": [],
           "type": "number",
           "unit": "short"
+        },
+        {
+          "alias": "App Name",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "mappingType": 1,
+          "pattern": "app_name.keyword",
+          "preserveFormat": false,
+          "thresholds": [],
+          "type": "string",
+          "unit": "short"
         }
       ],
       "targets": [
@@ -160,7 +180,7 @@
             },
             {
               "fake": true,
-              "field": "proc_name.keyword",
+              "field": "app_name.keyword",
               "id": "10",
               "settings": {
                 "min_doc_count": 1,
@@ -173,6 +193,18 @@
             {
               "fake": true,
               "field": "pid",
+              "id": "13",
+              "settings": {
+                "min_doc_count": 1,
+                "order": "desc",
+                "orderBy": "_term",
+                "size": "10"
+              },
+              "type": "terms"
+            },
+            {
+              "fake": true,
+              "field": "proc_name.keyword",
               "id": "11",
               "settings": {
                 "min_doc_count": 1,
@@ -1700,6 +1732,7 @@
       {
         "allValue": null,
         "current": {
+          "tags": [],
           "text": "All",
           "value": [
             "$__all"
@@ -1727,6 +1760,7 @@
       {
         "allValue": null,
         "current": {
+          "tags": [],
           "text": "All",
           "value": [
             "$__all"
@@ -1779,6 +1813,7 @@
       {
         "allValue": null,
         "current": {
+          "tags": [],
           "text": "All",
           "value": [
             "$__all"
@@ -1837,5 +1872,5 @@
   "timezone": "",
   "title": "AI Monitor",
   "uid": "9ITS8q6mk",
-  "version": 3
+  "version": 5
 }
